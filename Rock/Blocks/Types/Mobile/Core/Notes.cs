@@ -14,11 +14,18 @@
 // limitations under the License.
 // </copyright>
 //
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Data.Entity;
+using System.Linq;
 
 using Rock.Attribute;
 using Rock.Common.Mobile.Blocks.Content;
+using Rock.Data;
+using Rock.Model;
+using Rock.Security;
+using Rock.Web.Cache;
 using Rock.Web.UI;
 
 namespace Rock.Blocks.Types.Mobile.Core
@@ -35,11 +42,18 @@ namespace Rock.Blocks.Types.Mobile.Core
 
     #region Block Attributes
 
-    [EntityTypeField( "Context Entity Type",
-        Description = "The type of entity that will provide context for this block",
+    [EntityTypeField( "Entity Type",
+        Description = "The type of entity",
         IsRequired = false,
-        Key = AttributeKeys.ContextEntityType,
+        Key = AttributeKey.ContextEntityType,
         Order = 0 )]
+
+    [NoteTypeField( "Note Types",
+        Description = "Optional list of note types to limit display to",
+        AllowMultiple = true,
+        IsRequired = false,
+        Order = 1,
+        Key = AttributeKey.NoteTypes )]
 
     #endregion
 
@@ -49,13 +63,34 @@ namespace Rock.Blocks.Types.Mobile.Core
         /// <summary>
         /// The block setting attribute keys for the MobileContent block.
         /// </summary>
-        public static class AttributeKeys
+        public static class AttributeKey
         {
             /// <summary>
             /// The context entity type key
             /// </summary>
             public const string ContextEntityType = "ContextEntityType";
+
+            /// <summary>
+            /// The note types key
+            /// </summary>
+            public const string NoteTypes = "NoteTypes";
         }
+
+        /// <summary>
+        /// Gets the type of the context entity.
+        /// </summary>
+        /// <value>
+        /// The type of the context entity.
+        /// </value>
+        protected string ContextEntityType => GetAttributeValue( AttributeKey.ContextEntityType );
+
+        /// <summary>
+        /// Gets the note type unique identifiers selected in the block configuration.
+        /// </summary>
+        /// <value>
+        /// The note type unique identifiers selected in the block configuration.
+        /// </value>
+        protected ICollection<Guid> NoteTypes => GetAttributeValue( AttributeKey.NoteTypes ).SplitDelimitedValues().AsGuidList();
 
         #region IRockMobileBlockType Implementation
 
@@ -88,8 +123,73 @@ namespace Rock.Blocks.Types.Mobile.Core
 
         #endregion
 
+        private ICollection<NoteTypeCache> GetViewableNoteTypes()
+        {
+            return NoteTypeCache.All()
+                .Where( a => !NoteTypes.Any() || NoteTypes.Contains( a.Guid ) )
+                .Where( a => a.IsAuthorized( Authorization.VIEW, RequestContext.CurrentPerson ) )
+                .ToList();
+        }
+
         #region Action Methods
 
+        [BlockAction]
+        public BlockActionResult GetNotes( Guid? parentNoteGuid, int startIndex, int count )
+        {
+            using ( var rockContext = new RockContext() )
+            {
+                var noteService = new NoteService( rockContext );
+                var viewableNoteTypeIds = GetViewableNoteTypes().Select( t => t.Id ).ToList();
+                var baseUrl = GlobalAttributesCache.Value( "PublicApplicationRoot" );
+
+                var notesQuery = noteService.Queryable()
+                    .AsNoTracking()
+                    .Include( a => a.CreatedByPersonAlias.Person )
+                    .Include( a => a.ChildNotes )
+                    .Where( a => viewableNoteTypeIds.Contains( a.NoteTypeId ) );
+
+
+                if ( parentNoteGuid.HasValue )
+                {
+                    notesQuery = notesQuery.Where( a => a.ParentNote.Guid == parentNoteGuid.Value );
+                }
+                else
+                {
+                    var entityType = EntityTypeCache.Get( ContextEntityType );
+                    var entity = entityType != null ? RequestContext.GetContextEntity( entityType.GetEntityType() ) : null;
+
+                    if ( entity == null )
+                    {
+                        return ActionNotFound();
+                    }
+
+                    notesQuery = notesQuery.Where( a => a.EntityId == entity.Id && !a.ParentNoteId.HasValue );
+                }
+
+                var viewableNotes = notesQuery
+                    .OrderByDescending( a => a.IsAlert == true )
+                    .ThenByDescending( a => a.CreatedDateTime )
+                    .ToList()
+                    .Where( a => a.IsAuthorized( Authorization.VIEW, RequestContext.CurrentPerson ) )
+                    .Skip( startIndex )
+                    .Take( count )
+                    .ToList();
+
+                var noteData = viewableNotes
+                    .Select( a => new
+                    {
+                        a.Guid,
+                        a.Text,
+                        PhotoUrl = a.CreatedByPersonAlias?.Person?.PhotoId != null ? $"{baseUrl}{a.CreatedByPersonAlias.Person.PhotoUrl}" : null,
+                        Name = a.CreatedByPersonName,
+                        Date = a.CreatedDateTime.HasValue ? ( DateTimeOffset? ) new DateTimeOffset( a.CreatedDateTime.Value ) : null,
+                        ReplyCount = a.ChildNotes.Count( b => b.IsAuthorized( Authorization.VIEW, RequestContext.CurrentPerson ) )
+                    } )
+                    .ToList();
+
+                return ActionOk( noteData );
+            }
+        }
 
         #endregion
     }
