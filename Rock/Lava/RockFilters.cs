@@ -5254,7 +5254,7 @@ namespace Rock.Lava
             {
                 var result = new List<object>();
 
-                var lavaEngine = LavaEngine.Instance;
+                var lavaEngine = LavaEngine.CurrentEngine;
 
                 foreach ( var value in ( ( IEnumerable ) input ) )
                 {

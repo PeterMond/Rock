@@ -124,7 +124,7 @@ namespace Rock.Utility.Settings
         {
             get
             {
-                return LavaEngine.Instance.EngineName;
+                return LavaEngine.CurrentEngine.EngineName;
             }
         }
     }
