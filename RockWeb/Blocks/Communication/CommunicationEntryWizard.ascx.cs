@@ -1159,7 +1159,8 @@ function onTaskCompleted( resultData )
                 rblCommunicationMedium.Items.Add( new ListItem( "Push", CommunicationType.PushNotification.ConvertToInt().ToString() ) );
             }
 
-            if ( recipientPreferenceEnabled )
+            // Only add recipient preference if at least two options exists.
+            if ( rblCommunicationMedium.Items.Count > 1 && recipientPreferenceEnabled )
             {
                 rblCommunicationMedium.Items.Add( new ListItem( "Recipient Preference", CommunicationType.RecipientPreference.ConvertToInt().ToString() ) );
             }
