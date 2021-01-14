@@ -1143,7 +1143,6 @@ function onTaskCompleted( resultData )
             var recipientPreferenceEnabled = allowedCommunicationTypes.Contains( CommunicationType.RecipientPreference );
 
             // only prompt for Medium Type if more than one will be visible
-            rblCommunicationMedium.Visible = ( smsTransportEnabled || emailTransportEnabled || pushTransportEnabled ) && allowedCommunicationTypes.Count() > 1;
             if ( emailTransportEnabled )
             {
                 rblCommunicationMedium.Items.Add( new ListItem( "Email", CommunicationType.Email.ConvertToInt().ToString() ) );
@@ -1164,6 +1163,8 @@ function onTaskCompleted( resultData )
             {
                 rblCommunicationMedium.Items.Add( new ListItem( "Recipient Preference", CommunicationType.RecipientPreference.ConvertToInt().ToString() ) );
             }
+
+            rblCommunicationMedium.Visible = rblCommunicationMedium.Items.Count > 1;
 
             // make sure that either EMAIL, SMS, or PUSH is enabled
             if ( !( emailTransportEnabled || smsTransportEnabled || pushTransportEnabled ) )
