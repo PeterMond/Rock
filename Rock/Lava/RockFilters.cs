@@ -2379,7 +2379,7 @@ namespace Rock.Lava
                         propertyValue = null;
                     }
                 }
-                else if ( propertyValue is ILavaDataObject dynamicObject )
+                else if ( propertyValue is ILavaDataDictionary dynamicObject )
                 {
                     if ( dynamicObject.ContainsKey( propName ) )
                     {
@@ -5221,9 +5221,9 @@ namespace Rock.Lava
 
                 foreach ( var value in ( ( IEnumerable ) input ) )
                 {
-                    if ( value is ILavaDataObject )
+                    if ( value is ILavaDataDictionary )
                     {
-                        var liquidObject = value as ILavaDataObject;
+                        var liquidObject = value as ILavaDataDictionary;
                         //var condition = DotLiquid.Condition.Operators["=="];
 
                         if ( liquidObject.ContainsKey( filterKey )
@@ -5267,9 +5267,9 @@ namespace Rock.Lava
 
                 foreach ( var value in ( ( IEnumerable ) input ) )
                 {
-                    if ( value is ILavaDataObject )
+                    if ( value is ILavaDataDictionary )
                     {
-                        var liquidObject = value as ILavaDataObject;
+                        var liquidObject = value as ILavaDataDictionary;
                         if ( liquidObject.ContainsKey( selectKey ) )
                         {
                             result.Add( liquidObject.GetValue(selectKey) );
