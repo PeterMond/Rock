@@ -790,6 +790,7 @@ function onTaskCompleted( resultData )
         protected void btnRecipientSelectionNext_Click( object sender, EventArgs e )
         {
             nbRecipientsAlert.Visible = false;
+            pnlHeadingLabels.Visible = false;
             var recipients = GetRecipientFromListSelection();
             if ( !recipients.Any() )
             {
@@ -1079,6 +1080,7 @@ function onTaskCompleted( resultData )
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         protected void btnManualList_Click( object sender, EventArgs e )
         {
+            pnlHeadingLabels.Visible = false;
             pnlListSelection.Visible = false;
             ShowManualList();
         }
@@ -1090,6 +1092,7 @@ function onTaskCompleted( resultData )
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         protected void btnRecipientListNext_Click( object sender, EventArgs e )
         {
+            pnlHeadingLabels.Visible = false;
             nbRecipientsAlert.Visible = false;
 
             if ( !this.IndividualRecipientPersonIds.Any() )

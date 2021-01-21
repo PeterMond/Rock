@@ -22,7 +22,7 @@
 
             <div class="panel-body">
                 <%-- List Selection --%>
-                <asp:Panel ID="pnlListSelection" CssClass="js-navigation-panel" runat="server">
+                <asp:Panel ID="pnlListSelection" CssClass="js-navigation-panel h-100 d-flex flex-column" runat="server">
                     <h1 class="step-title">List Selection</h1>
 
                     <Rock:NotificationBox ID="nbCommunicationNotWizardCompatible" runat="server" NotificationBoxType="Info">
@@ -93,7 +93,7 @@
                         </div>
                     </div>
 
-                    <div class="actions margin-t-md">
+                    <div class="actions mt-auto">
                         <asp:LinkButton
                             ID="btnRecipientSelectionNext"
                             runat="server"
@@ -109,69 +109,66 @@
                 </asp:Panel>
 
                 <%-- Recipient List --%>
-                <asp:Panel ID="pnlIndividualRecipientList" CssClass="js-navigation-panel" runat="server" Visible="false">
-                    <h1 class="step-title">Recipient List</h1>
-                    <div class="row">
-                        <div class="col-sm-8">
-                            Below is a listing of your current recipients. You can add or remove individuals from this list before continuing.
-                        </div>
-                        <div class="col-sm-4">
-                        </div>
-                    </div>
+                <asp:Panel ID="pnlIndividualRecipientList" CssClass="js-navigation-panel d-flex flex-column h-100" runat="server" Visible="false">
 
-                    <hr />
 
-                    <asp:ValidationSummary
-                        ID="vsIndividualRecipientList"
-                        runat="server"
-                        HeaderText="Please correct the following:"
-                        ValidationGroup="vsIndividualRecipientList"
-                        CssClass="alert alert-warning" />
+                        <div>
+                            <h1 class="step-title">Recipient List</h1>
+                            <p>Below is a listing of your current recipients. You can add or remove individuals from this list before continuing.</p>
+                            <hr />
 
-                    <Rock:NotificationBox
-                        ID="nbIndividualListWarning"
-                        runat="server"
-                        NotificationBoxType="Validation" />
+                            <asp:ValidationSummary
+                                ID="vsIndividualRecipientList"
+                                runat="server"
+                                HeaderText="Please correct the following:"
+                                ValidationGroup="vsIndividualRecipientList"
+                                CssClass="alert alert-warning" />
 
-                    <div class="row margin-b-md">
-                        <div class="col-md-6"></div>
-                        <div class="col-md-6">
-                            <div class="pull-right">
-                                <Rock:PersonPicker
-                                    ID="ppAddPerson"
-                                    runat="server"
-                                    CssClass="picker-menu-right"
-                                    PersonName="Add Person"
-                                    OnSelectPerson="ppAddPerson_SelectPerson"
-                                    EnableSelfSelection="true" />
+                            <Rock:NotificationBox
+                                ID="nbIndividualListWarning"
+                                runat="server"
+                                NotificationBoxType="Validation" />
+
+                            <div class="clearfix margin-b-md">
+                                <div class="pull-right">
+                                    <Rock:PersonPicker
+                                        ID="ppAddPerson"
+                                        runat="server"
+                                        CssClass="picker-menu-right"
+                                        Label="Person"
+                                        PersonName="Add Person"
+                                        OnSelectPerson="ppAddPerson_SelectPerson"
+                                        EnableSelfSelection="true" />
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <Rock:Grid
-                        ID="gIndividualRecipients"
-                        runat="server"
-                        OnRowDataBound="gIndividualRecipients_RowDataBound"
-                        HideDeleteButtonForIsSystem="false"
-                        ShowConfirmDeleteDialog="false">
-                        <Columns>
-                            <Rock:SelectField></Rock:SelectField>
-                            <asp:BoundField DataField="FullName" HeaderText="Name" SortExpression="FullName" />
-                            <Rock:RockLiteralField ID="lRecipientAlertEmail" HeaderText="Email" />
-                            <Rock:RockLiteralField ID="lRecipientAlertSMS" HeaderText="SMS" />
-                            <Rock:RockLiteralField ID="lRecipientAlert" HeaderText="Notes" />
-                            <Rock:DeleteField OnClick="gIndividualRecipients_DeleteClick" />
-                        </Columns>
-                    </Rock:Grid>
-                    <div class="row">
-                        <div class="col-md-12 margin-t-md">
-                            <asp:LinkButton ID="btnDeleteSelectedRecipients"
+                        <div class="position-relative flex-fill styled-scroll">
+                            <div class="position-absolute inset-0 overflow-auto">
+                            <Rock:Grid
+                                ID="gIndividualRecipients"
                                 runat="server"
-                                CssClass="btn btn-outline-primary"
-                                OnClick="btnDeleteSelectedRecipients_Click"
-                                Text="Remove Selected" />
+                                OnRowDataBound="gIndividualRecipients_RowDataBound"
+                                HideDeleteButtonForIsSystem="false"
+                                ShowConfirmDeleteDialog="false">
+                                <Columns>
+                                    <Rock:SelectField></Rock:SelectField>
+                                    <asp:BoundField DataField="FullName" HeaderText="Name" SortExpression="FullName" />
+                                    <Rock:RockLiteralField ID="lRecipientAlertEmail" HeaderText="Email" />
+                                    <Rock:RockLiteralField ID="lRecipientAlertSMS" HeaderText="SMS" />
+                                    <Rock:RockLiteralField ID="lRecipientAlert" HeaderText="Notes" />
+                                    <Rock:DeleteField OnClick="gIndividualRecipients_DeleteClick" />
+                                </Columns>
+                            </Rock:Grid>
+                            </div>
                         </div>
-                    </div>
-                    <div class="actions margin-t-md">
+                        <div class="mt-3">
+                                <asp:LinkButton ID="btnDeleteSelectedRecipients"
+                                    runat="server"
+                                    CssClass="btn btn-outline-primary"
+                                    OnClick="btnDeleteSelectedRecipients_Click"
+                                    Text="Remove Selected" />
+                            </div>
+                    <div class="actions mt-3">
                         <asp:LinkButton ID="btnRecipientListNext"
                             runat="server"
                             AccessKey="n"
@@ -185,15 +182,15 @@
                 </asp:Panel>
 
                 <%-- Communication Delivery, Medium Selection --%>
-                <asp:Panel ID="pnlCommunicationDelivery" CssClass="js-navigation-panel" runat="server" Visible="false">
+                <asp:Panel ID="pnlCommunicationDelivery" CssClass="js-navigation-panel h-100 d-flex flex-column" runat="server" Visible="false">
+                    <div>
                     <h1 class="step-title">Communication Details</h1>
-                    <div class="row">
-                        <div class="col-sm-12">
+                    <p>
                             Provide additional information about your communication including when and how it should be sent.
-                        </div>
-                    </div>
+                    </p>
 
                     <hr />
+                    </div>
 
                     <Rock:NotificationBox ID="nbNoCommunicationTransport" runat="server" CssClass="margin-t-md" NotificationBoxType="Warning" Title="Warning" />
 
@@ -206,7 +203,9 @@
                             <Rock:Switch
                                 ID="swBulkCommunication"
                                 runat="server"
+                                label=" "
                                 Checked="false" CssClass="text-primary"
+                                FormGroupCssClass="py-2"
                                 Text="Bulk" />
                         </div>
                     </div>
@@ -234,13 +233,13 @@
                     </Rock:ModalDialog>
                     <div class="row">
                         <div class="col-sm-8">
-                            <asp:LinkButton runat="server" ID="lbScheduleSend" CssClass="btn btn-light" OnClick="lbScheduleSend_Click">
+                            <asp:LinkButton runat="server" ID="lbScheduleSend" CssClass="btn btn-link pl-0" OnClick="lbScheduleSend_Click">
                                 <i class='fa fa-calendar' aria-hidden='true'></i> Send: Immediately
                             </asp:LinkButton>
                         </div>
                     </div>
 
-                    <div class="actions">
+                    <div class="actions mt-auto">
                         <asp:LinkButton ID="btnCommunicationDeliveryPrevious" runat="server" AccessKey="p" ToolTip="Alt+p" Text="Previous" CssClass="btn btn-default js-wizard-navigation" CausesValidation="false" OnClick="btnCommunicationDeliveryPrevious_Click" />
                         <asp:LinkButton ID="btnCommunicationDeliveryNext" runat="server" AccessKey="n" Text="Next" DataLoadingText="Next" CssClass="btn btn-primary pull-right js-wizard-navigation" ValidationGroup="vgCommunicationDelivery" CausesValidation="true" OnClick="btnCommunicationDeliveryNext_Click" />
                     </div>
@@ -248,16 +247,20 @@
                 </asp:Panel>
 
                 <%-- Template Selection --%>
-                <asp:Panel ID="pnlTemplateSelection" CssClass="js-navigation-panel" runat="server" Visible="false">
-                    <div class="row">
-                        <div class="col-sm-8">
-                            <h1 class="step-title">Communication Template</h1>
-                        </div>
-                        <div class="col-sm-4">
-                            <div class="pull-right">
-                                <Rock:CategoryPicker ID="cpCommunicationTemplate" runat="server" AllowMultiSelect="false" Label="Category Filter" EntityTypeName="Rock.Model.CommunicationTemplate" OnSelectItem="cpCommunicationTemplate_SelectItem" />
+                <asp:Panel ID="pnlTemplateSelection" CssClass="js-navigation-panel h-100 d-flex flex-column" runat="server" Visible="false">
+                    <div>
+                        <div class="row">
+                            <div class="col-sm-8">
+                                <h1 class="step-title">Communication Template</h1>
+                                <p>Templates allow you to speed up the communication creation and provide consistency. Administrate Templates</p>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="pull-right">
+                                    <Rock:CategoryPicker ID="cpCommunicationTemplate" runat="server" AllowMultiSelect="false" Label="Category Filter" EntityTypeName="Rock.Model.CommunicationTemplate" OnSelectItem="cpCommunicationTemplate_SelectItem" />
+                                </div>
                             </div>
                         </div>
+                        <hr/>
                     </div>
 
                     <Rock:NotificationBox ID="nbTemplateSelectionWarning" runat="server" NotificationBoxType="Danger" Visible="false" />
@@ -284,51 +287,44 @@
                         </asp:Repeater>
                     </div>
 
-                    <div class="actions margin-t-md">
+                    <div class="actions mt-auto">
                         <asp:LinkButton ID="btnTemplateSelectionPrevious" runat="server" AccessKey="p" ToolTip="Alt+p" Text="Previous" CssClass="btn btn-default js-wizard-navigation" CausesValidation="false" OnClick="btnTemplateSelectionPrevious_Click" />
                         <asp:LinkButton ID="btnTemplateSelectionNext" runat="server" AccessKey="n" Text="Next" DataLoadingText="Next" CssClass="btn btn-primary pull-right js-wizard-navigation" ValidationGroup="vgTemplateSelection" CausesValidation="true" OnClick="btnTemplateSelectionNext_Click" />
                     </div>
                 </asp:Panel>
 
                 <%-- Email Editor --%>
-                <asp:Panel ID="pnlEmailEditor" CssClass="js-navigation-panel" runat="server" Visible="false">
-
-                    <div class="row">
-                        <div class="col-sm-8">
-                            <h1 class="step-title">Email Editor</h1>
-                        </div>
-                        <div class="col-sm-4">
+                <asp:Panel ID="pnlEmailEditor" CssClass="js-navigation-panel emaileditor-wrapper d-flex flex-column h-100 " runat="server" Visible="false">
 
                             <%-- Put the email send test and preview button in an updatepanel to avoid flicker with the email editor --%>
                             <asp:UpdatePanel ID="upEmailSendTest" runat="server">
                                 <ContentTemplate>
-                                    <div class="pull-right margin-all-sm">
+                                    <div class="position-absolute right-0 top-0">
                                         <Rock:NotificationBox ID="nbEmailTestResult" CssClass="margin-t-md" runat="server" NotificationBoxType="Success" Text="Test Email has been sent." Visible="false" Dismissable="true" />
                                         <a class="btn btn-xs btn-default js-email-sendtest" href="#">Send Test</a>
                                         <asp:LinkButton ID="btnEmailPreview" runat="server" CssClass="btn btn-xs btn-default js-saveeditorhtml" Text="Preview" OnClick="btnEmailPreview_Click" />
                                         <asp:LinkButton ID="btnEmailEditorSaveDraft" runat="server" CssClass="btn btn-xs btn-default js-saveeditorhtml" Text="Save" OnClick="btnEmailEditorSaveDraft_Click" />
                                     </div>
+                                </ContentTemplate>
+                            </asp:UpdatePanel>
 
+
+                        <section id="emaileditor" class="panel-fill-body position-relative flex-fill styled-scroll">
+                            <div id="emaileditor-designer" class="position-absolute top-0 left-0" style="opacity: 0;">
+                                <iframe id="ifEmailDesigner" name="emaileditor-iframe" class="emaileditor-iframe js-emaileditor-iframe" runat="server" src="javascript: window.frameElement.getAttribute('srcdoc');" frameborder="0" border="0" cellspacing="0" style="display: none;"></iframe>
+                            </div>
+                            <div id="emaileditor-properties" class="position-absolute top-0 right-0 bottom-0 overflow-auto">
                                     <div class="js-email-sendtest-inputs" style="display: none">
                                         <Rock:EmailBox ID="tbTestEmailAddress" runat="server" Label="Email" ValidationGroup="vgEmailEditorSendTest" Required="true" AllowMultiple="false" Help="This will temporarily change your email address during the test, but it will be changed back after the test is complete." />
                                         <asp:LinkButton ID="btnEmailSendTest" runat="server" CssClass="btn btn-xs btn-primary js-saveeditorhtml" Text="Send Test" CausesValidation="true" ValidationGroup="vgEmailEditorSendTest" OnClick="btnEmailSendTest_Click" />
                                         <a class="btn btn-xs btn-link js-email-sendtest-cancel" href="#">Cancel</a>
+                                        <hr/>
                                     </div>
-                                </ContentTemplate>
-                            </asp:UpdatePanel>
-                        </div>
-                    </div>
-                    <div class="emaileditor-wrapper margin-t-md">
-                        <section id="emaileditor">
-                            <div id="emaileditor-designer" style="opacity: 0;">
-                                <iframe id="ifEmailDesigner" name="emaileditor-iframe" class="emaileditor-iframe js-emaileditor-iframe" runat="server" src="javascript: window.frameElement.getAttribute('srcdoc');" frameborder="0" border="0" cellspacing="0" style="display: none;"></iframe>
-                            </div>
-                            <div id="emaileditor-properties">
 
                                 <div class="emaileditor-propertypanels js-propertypanels">
                                     <!-- Text/Html Properties -->
                                     <div class="propertypanel propertypanel-text" data-component="text" style="display: none;">
-                                        <h4 class="propertypanel-title">Text</h4>
+                                        <h4 class="propertypanel-title mt-0">Text</h4>
 
                                         <Rock:HtmlEditor ID="htmlEditor" CssClass="js-component-text-htmlEditor" runat="server" Height="350" CallbackOnChangeScript="updateTextComponent(this, contents);" />
 
@@ -408,7 +404,7 @@
 
                                     <!-- Image Properties -->
                                     <div class="propertypanel propertypanel-image" data-component="image" style="display: none;">
-                                        <h4 class="propertypanel-title">Image</h4>
+                                        <h4 class="propertypanel-title mt-0">Image</h4>
 
                                         <div class="row">
                                             <div class="col-md-6">
@@ -498,7 +494,7 @@
 
                                     <!-- Section Properties -->
                                     <div class="propertypanel propertypanel-section" data-component="section" style="display: none;">
-                                        <h4 class="propertypanel-title">Section</h4>
+                                        <h4 class="propertypanel-title mt-0">Section</h4>
                                         <div id="component-section-column1">
                                             <span class="label label-default">Column 1</span>
                                             <div class="row">
@@ -647,7 +643,7 @@
 
                                     <!-- Divider Properties -->
                                     <div class="propertypanel propertypanel-divider" id="component-divider-panel" data-component="divider" style="display: none;">
-                                        <h4 class="propertypanel-title">Divider</h4>
+                                        <h4 class="propertypanel-title mt-0">Divider</h4>
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <div class="form-group">
@@ -684,7 +680,7 @@
 
                                     <!-- Code Properties -->
                                     <div class="propertypanel propertypanel-code" data-component="code" style="display: none;">
-                                        <h4 class="propertypanel-title">HTML</h4>
+                                        <h4 class="propertypanel-title mt-0">HTML</h4>
                                         <Rock:CodeEditor ID="codeEditor" CssClass="js-component-code-codeEditor" runat="server" Height="350" EditorTheme="Rock" EditorMode="Lava" OnChangeScript="updateCodeComponent(this, contents);" />
                                         <div class="alert alert-danger" id="component-code-codeEditor-error" style="display: none"></div>
 
@@ -723,7 +719,7 @@
 
                                     <!-- Button Properties -->
                                     <div id="component-button-panel" class="propertypanel propertypanel-button" data-component="button" style="display: none;">
-                                        <h4 class="propertypanel-title">Button</h4>
+                                        <h4 class="propertypanel-title mt-0">Button</h4>
                                         <hr />
                                         <div class="form-group">
                                             <label class="control-label" for="component-button-buttontext">Button Text</label>
@@ -843,7 +839,7 @@
 
                                     <!-- RSVP Properties -->
                                     <div id="component-rsvp-panel" class="propertypanel propertypanel-rsvp" data-component="rsvp" style="display: none;">
-                                        <h4 class="propertypanel-title">RSVP</h4>
+                                        <h4 class="propertypanel-title mt-0">RSVP</h4>
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <div class="form-group" id="component-rsvp-group">
@@ -1079,9 +1075,8 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="actions margin-t-lg">
+                    <div class="actions clearfix mt-3">
                         <asp:LinkButton ID="btnEmailEditorPrevious" runat="server" AccessKey="p" ToolTip="Alt+p" Text="Previous" CssClass="btn btn-default js-saveeditorhtml js-wizard-navigation" CausesValidation="false" OnClick="btnEmailEditorPrevious_Click" />
                         <asp:LinkButton ID="btnEmailEditorNext" runat="server" AccessKey="n" Text="Next" DataLoadingText="Next" CssClass="btn btn-primary pull-right js-saveeditorhtml js-wizard-navigation" ValidationGroup="vgEmailEditor" CausesValidation="true" OnClick="btnEmailEditorNext_Click" />
                     </div>
@@ -1110,8 +1105,12 @@
                 </asp:UpdatePanel>
 
                 <%-- Email Summary --%>
-                <asp:Panel ID="pnlEmailSummary" CssClass="js-navigation-panel" runat="server" Visible="false">
-                    <h1 class="step-title">Email Summary</h1>
+                <asp:Panel ID="pnlEmailSummary" CssClass="js-navigation-panel h-100 d-flex flex-column" runat="server" Visible="false">
+                    <div>
+                        <h1 class="step-title">Email Summary</h1>
+                        <p>Provide the basic information about your email.</p>
+                        <hr/>
+                    </div>
 
                     <asp:ValidationSummary ID="vsEmailSummary" runat="server" HeaderText="Please correct the following:" ValidationGroup="vgEmailSummary" CssClass="alert alert-validation" />
 
@@ -1165,14 +1164,14 @@
                         </div>
                     </div>
 
-                    <div class="actions">
+                    <div class="actions clearfix mt-auto">
                         <asp:LinkButton ID="btnEmailSummaryPrevious" runat="server" AccessKey="p" ToolTip="Alt+p" Text="Previous" CssClass="btn btn-default js-wizard-navigation" CausesValidation="false" OnClick="btnEmailSummaryPrevious_Click" />
                         <asp:LinkButton ID="btnEmailSummaryNext" runat="server" AccessKey="n" Text="Next" DataLoadingText="Next" CssClass="btn btn-primary pull-right js-wizard-navigation" ValidationGroup="vgEmailSummary" CausesValidation="true" OnClick="btnEmailSummaryNext_Click" />
                     </div>
                 </asp:Panel>
 
                 <%-- Mobile Text Editor --%>
-                <asp:Panel ID="pnlMobileTextEditor" CssClass="js-navigation-panel" runat="server" Visible="false">
+                <asp:Panel ID="pnlMobileTextEditor" CssClass="js-navigation-panel h-100 d-flex flex-column" runat="server" Visible="false">
                     <h1 class="step-title">Mobile Text Editor</h1>
                     <asp:HiddenField ID="hfSMSSampleRecipientPersonId" runat="server" />
 
@@ -1220,14 +1219,14 @@
                             </div>
                         </div>
                     </div>
-                    <div class="actions margin-t-md">
+                    <div class="actions clearfix mt-auto">
                         <asp:LinkButton ID="btnMobileTextEditorPrevious" runat="server" AccessKey="p" ToolTip="Alt+p" Text="Previous" CssClass="btn btn-default js-wizard-navigation" CausesValidation="false" OnClick="btnMobileTextEditorPrevious_Click" />
                         <asp:LinkButton ID="btnMobileTextEditorNext" runat="server" AccessKey="n" Text="Next" DataLoadingText="Next" CssClass="btn btn-primary pull-right js-wizard-navigation" ValidationGroup="vgMobileTextEditor" CausesValidation="true" OnClick="btnMobileTextEditorNext_Click" />
                     </div>
                 </asp:Panel>
 
                 <%-- Push Editor --%>
-                <asp:Panel ID="pnlPushEditor" CssClass="js-navigation-panel" runat="server" Visible="false">
+                <asp:Panel ID="pnlPushEditor" CssClass="js-navigation-panel h-100 d-flex flex-column" runat="server" Visible="false">
                     <h1 class="step-title">Push Notification Editor</h1>
                     <asp:ValidationSummary ID="vsPushEditor" runat="server" HeaderText="Please correct the following:" ValidationGroup="vgPushEditor" CssClass="alert alert-validation" />
                     <div class="row">
@@ -1235,134 +1234,129 @@
                             <asp:PlaceHolder ID="phPushControl" runat="server" />
                         </div>
                     </div>
-                    <div class="actions margin-t-md">
+                    <div class="actions clearfix mt-auto">
                         <asp:LinkButton ID="btnPushEditorPrevious" runat="server" AccessKey="p" ToolTip="Alt+p" Text="Previous" CssClass="btn btn-default js-wizard-navigation" CausesValidation="false" OnClick="btnPushEditorPrevious_Click" />
                         <asp:LinkButton ID="btnPushEditorNext" runat="server" AccessKey="n" Text="Next" DataLoadingText="Next" CssClass="btn btn-primary pull-right js-wizard-navigation" ValidationGroup="vgPushEditor" CausesValidation="true" OnClick="btnPushEditorNext_Click" />
                     </div>
                 </asp:Panel>
 
                 <%-- Confirmation --%>
-                <asp:Panel ID="pnlConfirmation" CssClass="js-navigation-panel" runat="server" Visible="false">
-                    <h1 class="step-title">Confirmation</h1>
+                <asp:Panel ID="pnlConfirmation" CssClass="js-navigation-panel h-100 d-flex flex-column" runat="server" Visible="false">
+                    <div class="panel-fill-body position-relative flex-fill styled-scroll">
+                        <div class="position-absolute inset-0 overflow-auto">
+                            <div class="panel-body">
+                                <h1 class="step-title">Confirmation</h1>
+                                <p>Your communication is ready to be sent. Please review these final details before sending.</p>
 
-                    <div class="row">
-                        <div class="col-sm-12">
-                            Your communication is ready to be sent. Please review these final details before sending.
-                        </div>
-                    </div>
-
-                    <hr />
-                    <Rock:NotificationBox ID="nbConfirmation" runat="server" NotificationBoxType="Info" />
-                    <div class="row d-flex">
-                        <div class="col-sm-4">
-                            <Rock:RockLiteral runat="server" ID="litRecipientCount" Label="Recipient Count" Text="234" />
-                            <Rock:RockLiteral runat="server" ID="litCommunicationName" Label="Communication Name" Text="234" />
-                            <Rock:RockLiteral runat="server" ID="litSchedule" Label="Schedule" Text="234" />
-                            <Rock:RockLiteral runat="server" ID="litRecipientList" Label="Recipient List" Text="234" />
-                            <Rock:RockLiteral runat="server" ID="litTemplate" Label="Template" Text="234" />
-                            <Rock:RockLiteral runat="server" ID="litCommunicationMedium" Label="Communication Medium" Text="234" />
-                        </div>
-                        <div class="col-sm-8">
-                            <ul class="nav nav-pills margin-b-md">
-                                <li id="tabEmail" runat="server" class="active">
-                                    <asp:LinkButton ID="lnkEmail" runat="server" Text="Email" CssClass="show-pill" OnClick="lnkEmail_Click" pill="email-tab" />
-                                </li>
-                                <li id="tabSMS" runat="server">
-                                    <asp:LinkButton ID="lnkSms" runat="server" Text="SMS" CssClass="show-pill" OnClick="lnkSms_Click" pill="sms-tab" />
-                                </li>
-                                <li id="tabPush" runat="server">
-                                    <asp:LinkButton ID="lnkPush" runat="server" Text="Push" CssClass="show-pill" OnClick="lnkPush_Click" pill="push-tab" />
-                                </li>
-                            </ul>
-                            <hr />
-                            <div class="tabContent h-100">
-                                <asp:Panel runat="server" ID="pnlEmailTab" CssClass="tab-panel h-100">
-                                    <div class="row">
-                                        <div class="col-sm-4">
-                                            <Rock:RockLiteral runat="server" ID="litEmailConfirmationFrom" Label="From" />
-                                        </div>
-                                        <div class="col-sm-8">
-                                            <Rock:RockLiteral runat="server" ID="litEmailConfirmationSubject" Label="Subject" />
-                                        </div>
+                                <hr />
+                                <Rock:NotificationBox ID="nbConfirmation" runat="server" NotificationBoxType="Info" />
+                                <div class="row d-flex flex-wrap">
+                                    <div class="col-sm-4">
+                                        <Rock:RockLiteral runat="server" ID="litRecipientCount" Label="Recipient Count" Text="234" />
+                                        <Rock:RockLiteral runat="server" ID="litCommunicationName" Label="Communication Name" Text="234" />
+                                        <Rock:RockLiteral runat="server" ID="litSchedule" Label="Schedule" Text="234" />
+                                        <Rock:RockLiteral runat="server" ID="litRecipientList" Label="Recipient List" Text="234" />
+                                        <Rock:RockLiteral runat="server" ID="litTemplate" Label="Template" Text="234" />
+                                        <Rock:RockLiteral runat="server" ID="litCommunicationMedium" Label="Communication Medium" Text="234" />
                                     </div>
-                                    <div class="row">
-                                        <div class="col-sm-4">
-                                            <Rock:RockLiteral runat="server" ID="litEmailConfirmationReplyTo" Label="Reply To" />
-                                        </div>
-                                        <div class="col-sm-4">
-                                            <Rock:RockLiteral runat="server" ID="litEmailConfirmationCc" Label="CC" />
-                                        </div>
-                                        <div class="col-sm-4">
-                                            <Rock:RockLiteral runat="server" ID="litEmailConfirmationBcc" Label="BCC" />
-                                        </div>
-                                    </div>
-                                    <iframe
-                                        runat="server"
-                                        id="ifConfirmationEmailPreview"
-                                        name="confirmationemailpreview-iframe"
-                                        src="javascript: window.frameElement.getAttribute('srcdoc');"
-                                        frameborder="0"
-                                        border="0"
-                                        cellspacing="0"
-                                        scrolling="yes"
-                                        class="w-100"
-                                        style="min-height: -webkit-fill-available" />
-                                </asp:Panel>
-                                <asp:Panel runat="server" ID="pnlSmsTab" CssClass="tab-panel">
-                                    <div class="row">
-                                        <div class="col-sm-4">
-                                            <Rock:RockLiteral runat="server" ID="litConfirmationSmsFromNumber" Label="From" />
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="device device-mobile hidden-sm hidden-xs">
-                                            <div class="sms">
-                                                <header>
-                                                    <span class="left">Messages</span><h2>
-                                                        <asp:Literal ID="lblConfirmationSmsTo" runat="server" Text="Ted Decker" /></h2>
-                                                    <span class="right">Contacts</span>
-                                                </header>
-                                                <div class="messages-wrapper">
-                                                    <div class="message to">
-                                                        <asp:Label ID="lblConfirmationSmsMessage" runat="server" />
+                                    <div class="col-sm-8">
+                                        <ul class="nav nav-pills">
+                                            <li id="tabEmail" runat="server" class="active">
+                                                <asp:LinkButton ID="lnkEmail" runat="server" Text="Email" CssClass="show-pill" OnClick="lnkEmail_Click" pill="email-tab" />
+                                            </li>
+                                            <li id="tabSMS" runat="server">
+                                                <asp:LinkButton ID="lnkSms" runat="server" Text="SMS" CssClass="show-pill" OnClick="lnkSms_Click" pill="sms-tab" />
+                                            </li>
+                                            <li id="tabPush" runat="server">
+                                                <asp:LinkButton ID="lnkPush" runat="server" Text="Push" CssClass="show-pill" OnClick="lnkPush_Click" pill="push-tab" />
+                                            </li>
+                                        </ul>
+                                        <hr />
+                                        <div class="tabContent h-100">
+                                            <asp:Panel runat="server" ID="pnlEmailTab" CssClass="tab-panel h-100">
+                                                <div class="row">
+                                                    <div class="col-sm-4">
+                                                        <Rock:RockLiteral runat="server" ID="litEmailConfirmationFrom" Label="From" />
                                                     </div>
-
-                                                    <div id="divConfirmationSmsImageAttachmentLoadError" runat="server" style="display: none" class="alert alert-danger margin-all-md" />
-                                                    <asp:Image ID="imgConfirmationSmsImageAttachment" runat="server" CssClass="pull-right margin-r-md" onerror="showConfirmationSMSAttachmentLoadError()" Width="50%" />
+                                                    <div class="col-sm-8">
+                                                        <Rock:RockLiteral runat="server" ID="litEmailConfirmationSubject" Label="Subject" />
+                                                    </div>
                                                 </div>
-                                            </div>
+                                                <div class="row">
+                                                    <div class="col-sm-4">
+                                                        <Rock:RockLiteral runat="server" ID="litEmailConfirmationReplyTo" Label="Reply To" />
+                                                    </div>
+                                                    <div class="col-sm-4">
+                                                        <Rock:RockLiteral runat="server" ID="litEmailConfirmationCc" Label="CC" />
+                                                    </div>
+                                                    <div class="col-sm-4">
+                                                        <Rock:RockLiteral runat="server" ID="litEmailConfirmationBcc" Label="BCC" />
+                                                    </div>
+                                                </div>
+                                                <iframe
+                                                    runat="server"
+                                                    id="ifConfirmationEmailPreview"
+                                                    name="confirmationemailpreview-iframe"
+                                                    src="javascript: window.frameElement.getAttribute('srcdoc');"
+                                                    frameborder="0"
+                                                    border="0"
+                                                    cellspacing="0"
+                                                    scrolling="yes"
+                                                    class="w-100"
+                                                    style="min-height: -webkit-fill-available" />
+                                            </asp:Panel>
+                                            <asp:Panel runat="server" ID="pnlSmsTab" CssClass="tab-panel">
+                                                <div class="row">
+                                                    <div class="col-sm-4">
+                                                        <Rock:RockLiteral runat="server" ID="litConfirmationSmsFromNumber" Label="From" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="device device-mobile hidden-sm hidden-xs">
+                                                        <div class="sms">
+                                                            <header>
+                                                                <span class="left">Messages</span><h2>
+                                                                    <asp:Literal ID="lblConfirmationSmsTo" runat="server" Text="Ted Decker" /></h2>
+                                                                <span class="right">Contacts</span>
+                                                            </header>
+                                                            <div class="messages-wrapper">
+                                                                <div class="message to">
+                                                                    <asp:Label ID="lblConfirmationSmsMessage" runat="server" />
+                                                                </div>
+
+                                                                <div id="divConfirmationSmsImageAttachmentLoadError" runat="server" style="display: none" class="alert alert-danger margin-all-md" />
+                                                                <asp:Image ID="imgConfirmationSmsImageAttachment" runat="server" CssClass="pull-right margin-r-md" onerror="showConfirmationSMSAttachmentLoadError()" Width="50%" />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </asp:Panel>
+                                            <asp:Panel runat="server" ID="pnlPush" CssClass="tab-panel">
+                                                <div class="row">
+                                                    <div class="col-sm-4">
+                                                        <Rock:RockLiteral runat="server" ID="litConfirmationPushTitle" Label="Title" />
+                                                        <Rock:RockLiteral runat="server" ID="litConfirmationPushMessage" Label="Message" />
+                                                    </div>
+                                                    <div class="col-sm-4">
+                                                        <Rock:RockLiteral runat="server" ID="litConfirmationPushOpenAction" Label="Open Action" />
+                                                    </div>
+                                                    <div class="col-sm-4">
+                                                        <Rock:RockLiteral runat="server" ID="litConfirmationPushOpenActionDetails" Label="Open Action Details" />
+                                                    </div>
+                                                </div>
+                                            </asp:Panel>
                                         </div>
                                     </div>
-                                </asp:Panel>
-                                <asp:Panel runat="server" ID="pnlPush" CssClass="tab-panel">
-                                    <div class="row">
-                                        <div class="col-sm-4">
-                                            <Rock:RockLiteral runat="server" ID="litConfirmationPushTitle" Label="Title" />
-                                            <Rock:RockLiteral runat="server" ID="litConfirmationPushMessage" Label="Message" />
-                                        </div>
-                                        <div class="col-sm-4">
-                                            <Rock:RockLiteral runat="server" ID="litConfirmationPushOpenAction" Label="Open Action" />
-                                        </div>
-                                        <div class="col-sm-4">
-                                            <Rock:RockLiteral runat="server" ID="litConfirmationPushOpenActionDetails" Label="Open Action Details" />
-                                        </div>
-                                    </div>
-                                </asp:Panel>
+                                </div>
                             </div>
                         </div>
                     </div>
-
-                    <div class="actions margin-b-lg">
-                        <div class="col-sm-6">
+                    <div class="actions clearfix mt-3">
                             <asp:LinkButton ID="btnConfirmationPrevious" runat="server" AccessKey="p" ToolTip="Alt+p" Text="Previous" CssClass="btn btn-default" CausesValidation="false" OnClick="btnConfirmationPrevious_Click" />
-                        </div>
-                        <div class="col-sm-6">
                             <div class="pull-right">
                                 <asp:LinkButton ID="btnSaveAsDraft" runat="server" Text="Save as Draft" CssClass="btn btn-default" CausesValidation="true" ValidationGroup="vgConfirmation" OnClick="btnSaveAsDraft_Click" />
                                 <asp:LinkButton ID="btnSend" runat="server" Text="Send" CssClass="btn btn-primary" CausesValidation="true" ValidationGroup="vgConfirmation" OnClick="btnSend_Click" />
                             </div>
-                        </div>
-
                     </div>
                 </asp:Panel>
 
@@ -1412,6 +1406,8 @@
 
         <script type="text/javascript">
             Sys.Application.add_load(function () {
+                Rock.controls.fullScreen.initialize();
+
                 if ($('#<%=pnlEmailEditor.ClientID%>').length) {
                     loadEmailEditor()
                 }
@@ -1505,10 +1501,10 @@
                 $('.js-rsvp-show-advanced-settings').text('Show Advanced Settings');
 
                 $('.js-email-sendtest').off('click').on('click', function () {
-                    $('#<%=btnEmailEditorSaveDraft.ClientID%>').hide();
+                    // $('#<%=btnEmailEditorSaveDraft.ClientID%>').hide();
                     $('#<%=nbEmailTestResult.ClientID%>').hide();
                     $(this).hide();
-                    $('#<%=btnEmailPreview.ClientID%>').hide();
+                    // $('#<%=btnEmailPreview.ClientID%>').hide();
 
                     $('.js-email-sendtest-inputs').slideDown();
                     return false;
@@ -1516,8 +1512,8 @@
 
                 $('.js-email-sendtest-cancel').off('click').on('click', function () {
                     $('.js-email-sendtest').show();
-                    $('#<%=btnEmailPreview.ClientID%>').show();
-                    $('#<%=btnEmailEditorSaveDraft.ClientID%>').show();
+                    // $('#<%=btnEmailPreview.ClientID%>').show();
+                    //$('#<%=btnEmailEditorSaveDraft.ClientID%>').show();
                     $('.js-email-sendtest-inputs').hide();
                     return false;
                 });
