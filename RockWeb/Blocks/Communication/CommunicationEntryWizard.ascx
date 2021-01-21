@@ -23,7 +23,7 @@
             <div class="panel-body">
                 <%-- List Selection --%>
                 <asp:Panel ID="pnlListSelection" CssClass="js-navigation-panel h-100 d-flex flex-column" runat="server">
-                    <h1 class="step-title">List Selection</h1>
+                    <h1 class="step-title text-break">List Selection</h1>
 
                     <Rock:NotificationBox ID="nbCommunicationNotWizardCompatible" runat="server" NotificationBoxType="Info">
                         This communication uses a template that is not compatible with the email wizard. You can continue with the email wizard, but the main content of the email will be replaced when the Email Wizard compatible template is selected. To keep the content, click 'Use Simple Editor' to use the simple communication editor.
@@ -113,7 +113,7 @@
 
 
                         <div>
-                            <h1 class="step-title">Recipient List</h1>
+                            <h1 class="step-title text-break">Recipient List</h1>
                             <p>Below is a listing of your current recipients. You can add or remove individuals from this list before continuing.</p>
                             <hr />
 
@@ -184,12 +184,9 @@
                 <%-- Communication Delivery, Medium Selection --%>
                 <asp:Panel ID="pnlCommunicationDelivery" CssClass="js-navigation-panel h-100 d-flex flex-column" runat="server" Visible="false">
                     <div>
-                    <h1 class="step-title">Communication Details</h1>
-                    <p>
-                            Provide additional information about your communication including when and how it should be sent.
-                    </p>
-
-                    <hr />
+                        <h1 class="step-title text-break">Communication Details</h1>
+                        <p>Provide additional information about your communication including when and how it should be sent.</p>
+                        <hr />
                     </div>
 
                     <Rock:NotificationBox ID="nbNoCommunicationTransport" runat="server" CssClass="margin-t-md" NotificationBoxType="Warning" Title="Warning" />
@@ -253,7 +250,7 @@
                     <div>
                         <div class="row">
                             <div class="col-sm-8">
-                                <h1 class="step-title">Communication Template</h1>
+                                <h1 class="step-title text-break">Communication Template</h1>
                                 <p>Templates allow you to speed up the communication creation and provide consistency. Administrate Templates</p>
                             </div>
                             <div class="d-flex col-sm-4">
@@ -1111,7 +1108,7 @@
                 <%-- Email Summary --%>
                 <asp:Panel ID="pnlEmailSummary" CssClass="js-navigation-panel h-100 d-flex flex-column" runat="server" Visible="false">
                     <div>
-                        <h1 class="step-title">Email Summary</h1>
+                        <h1 class="step-title text-break">Email Summary</h1>
                         <p>Provide the basic information about your email.</p>
                         <hr/>
                     </div>
@@ -1176,7 +1173,7 @@
 
                 <%-- Mobile Text Editor --%>
                 <asp:Panel ID="pnlMobileTextEditor" CssClass="js-navigation-panel h-100 d-flex flex-column" runat="server" Visible="false">
-                    <h1 class="step-title">Mobile Text Editor</h1>
+                    <h1 class="step-title text-break">Mobile Text Editor</h1>
                     <asp:HiddenField ID="hfSMSSampleRecipientPersonId" runat="server" />
 
                     <asp:ValidationSummary ID="vsMobileTextEditor" runat="server" HeaderText="Please correct the following:" ValidationGroup="vgMobileTextEditor" CssClass="alert alert-validation" />
@@ -1231,7 +1228,7 @@
 
                 <%-- Push Editor --%>
                 <asp:Panel ID="pnlPushEditor" CssClass="js-navigation-panel h-100 d-flex flex-column" runat="server" Visible="false">
-                    <h1 class="step-title">Push Notification Editor</h1>
+                    <h1 class="step-title text-break">Push Notification Editor</h1>
                     <asp:ValidationSummary ID="vsPushEditor" runat="server" HeaderText="Please correct the following:" ValidationGroup="vgPushEditor" CssClass="alert alert-validation" />
                     <div class="row">
                         <div class="col-md-12">
@@ -1250,7 +1247,7 @@
                         <div class="position-absolute inset-0 overflow-auto">
                             <div class="panel-body h-100 d-flex flex-column">
                                 <div>
-                                <h1 class="step-title">Confirmation</h1>
+                                <h1 class="step-title text-break">Confirmation</h1>
                                 <p>Your communication is ready to be sent. Please review these final details before sending.</p>
 
                                 <hr />
