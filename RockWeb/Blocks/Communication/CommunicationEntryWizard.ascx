@@ -129,8 +129,8 @@
                                 runat="server"
                                 NotificationBoxType="Validation" />
 
-                            <div class="clearfix margin-b-md">
-                                <div class="pull-right">
+                            <div class="d-flex margin-b-md">
+                                <div class="ml-sm-auto">
                                     <Rock:PersonPicker
                                         ID="ppAddPerson"
                                         runat="server"
@@ -142,7 +142,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="position-relative flex-fill styled-scroll">
+                        <div class="position-relative flex-fill styled-scroll" style="min-height:200px;">
                             <div class="position-absolute inset-0 overflow-auto">
                             <Rock:Grid
                                 ID="gIndividualRecipients"
@@ -196,16 +196,16 @@
 
                     <asp:ValidationSummary ID="vsCommunicationDelivery" runat="server" HeaderText="Please correct the following:" ValidationGroup="vgCommunicationDelivery" CssClass="alert alert-validation" />
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-xs-12 col-sm-9 col-md-6">
                             <Rock:RockTextBox ID="tbCommunicationName" runat="server" Label="Communication Name" Help="This name is used internally to describe the communication. It is not sent as a part of the communication." Required="true" ValidationGroup="vgCommunicationDelivery" MaxLength="100" />
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-xs-12 col-sm-3 col-md-6">
                             <Rock:Switch
                                 ID="swBulkCommunication"
                                 runat="server"
                                 label=" "
-                                Checked="false" CssClass="text-primary"
-                                FormGroupCssClass="py-2"
+                                Checked="false"
+                                FormGroupCssClass="custom-switch-centered hide-label-sm"
                                 Text="Bulk" />
                         </div>
                     </div>
@@ -231,12 +231,10 @@
                             <Rock:RockCheckBox runat="server" CssClass="js-send-immediately" ID="chkSendImmediately" Text="Send Immediately" Checked="true" />
                         </Content>
                     </Rock:ModalDialog>
-                    <div class="row">
-                        <div class="col-sm-8">
-                            <asp:LinkButton runat="server" ID="lbScheduleSend" CssClass="btn btn-link pl-0" OnClick="lbScheduleSend_Click">
-                                <i class='fa fa-calendar' aria-hidden='true'></i> Send: Immediately
-                            </asp:LinkButton>
-                        </div>
+                    <div>
+                    <asp:LinkButton runat="server" ID="lbScheduleSend" CssClass="btn btn-link pl-0 mb-4" OnClick="lbScheduleSend_Click">
+                        <i class='fa fa-calendar' aria-hidden='true'></i> Send: Immediately
+                    </asp:LinkButton>
                     </div>
 
                     <div class="actions mt-auto">
@@ -248,14 +246,18 @@
 
                 <%-- Template Selection --%>
                 <asp:Panel ID="pnlTemplateSelection" CssClass="js-navigation-panel h-100 d-flex flex-column" runat="server" Visible="false">
+                    <div class="panel-fill-body position-relative flex-fill styled-scroll">
+                        <div class="position-absolute inset-0 overflow-auto">
+                            <div class="panel-body">
+
                     <div>
                         <div class="row">
                             <div class="col-sm-8">
                                 <h1 class="step-title">Communication Template</h1>
                                 <p>Templates allow you to speed up the communication creation and provide consistency. Administrate Templates</p>
                             </div>
-                            <div class="col-sm-4">
-                                <div class="pull-right">
+                            <div class="d-flex col-sm-4">
+                                <div class="ml-sm-auto">
                                     <Rock:CategoryPicker ID="cpCommunicationTemplate" runat="server" AllowMultiSelect="false" Label="Category Filter" EntityTypeName="Rock.Model.CommunicationTemplate" OnSelectItem="cpCommunicationTemplate_SelectItem" />
                                 </div>
                             </div>
@@ -264,7 +266,7 @@
                     </div>
 
                     <Rock:NotificationBox ID="nbTemplateSelectionWarning" runat="server" NotificationBoxType="Danger" Visible="false" />
-                    <div class="row margin-t-lg template-selection">
+                    <div class="row template-selection">
                         <asp:Repeater ID="rptSelectTemplate" runat="server" OnItemDataBound="rptSelectTemplate_ItemDataBound">
                             <ItemTemplate>
                                 <div class="col-md-4 col-sm-6">
@@ -287,7 +289,9 @@
                         </asp:Repeater>
                     </div>
 
-                    <div class="actions mt-auto">
+                    </div></div></div>
+
+                    <div class="actions mt-3">
                         <asp:LinkButton ID="btnTemplateSelectionPrevious" runat="server" AccessKey="p" ToolTip="Alt+p" Text="Previous" CssClass="btn btn-default js-wizard-navigation" CausesValidation="false" OnClick="btnTemplateSelectionPrevious_Click" />
                         <asp:LinkButton ID="btnTemplateSelectionNext" runat="server" AccessKey="n" Text="Next" DataLoadingText="Next" CssClass="btn btn-primary pull-right js-wizard-navigation" ValidationGroup="vgTemplateSelection" CausesValidation="true" OnClick="btnTemplateSelectionNext_Click" />
                     </div>
@@ -1244,14 +1248,16 @@
                 <asp:Panel ID="pnlConfirmation" CssClass="js-navigation-panel h-100 d-flex flex-column" runat="server" Visible="false">
                     <div class="panel-fill-body position-relative flex-fill styled-scroll">
                         <div class="position-absolute inset-0 overflow-auto">
-                            <div class="panel-body">
+                            <div class="panel-body h-100 d-flex flex-column">
+                                <div>
                                 <h1 class="step-title">Confirmation</h1>
                                 <p>Your communication is ready to be sent. Please review these final details before sending.</p>
 
                                 <hr />
+                                </div>
                                 <Rock:NotificationBox ID="nbConfirmation" runat="server" NotificationBoxType="Info" />
-                                <div class="row d-flex flex-wrap">
-                                    <div class="col-sm-4">
+                                <div class="row d-flex flex-wrap flex-fill">
+                                    <div class="col-xs-12 col-md-4">
                                         <Rock:RockLiteral runat="server" ID="litRecipientCount" Label="Recipient Count" Text="234" />
                                         <Rock:RockLiteral runat="server" ID="litCommunicationName" Label="Communication Name" Text="234" />
                                         <Rock:RockLiteral runat="server" ID="litSchedule" Label="Schedule" Text="234" />
@@ -1259,21 +1265,23 @@
                                         <Rock:RockLiteral runat="server" ID="litTemplate" Label="Template" Text="234" />
                                         <Rock:RockLiteral runat="server" ID="litCommunicationMedium" Label="Communication Medium" Text="234" />
                                     </div>
-                                    <div class="col-sm-8">
-                                        <ul class="nav nav-pills">
-                                            <li id="tabEmail" runat="server" class="active">
-                                                <asp:LinkButton ID="lnkEmail" runat="server" Text="Email" CssClass="show-pill" OnClick="lnkEmail_Click" pill="email-tab" />
-                                            </li>
-                                            <li id="tabSMS" runat="server">
-                                                <asp:LinkButton ID="lnkSms" runat="server" Text="SMS" CssClass="show-pill" OnClick="lnkSms_Click" pill="sms-tab" />
-                                            </li>
-                                            <li id="tabPush" runat="server">
-                                                <asp:LinkButton ID="lnkPush" runat="server" Text="Push" CssClass="show-pill" OnClick="lnkPush_Click" pill="push-tab" />
-                                            </li>
-                                        </ul>
-                                        <hr />
-                                        <div class="tabContent h-100">
-                                            <asp:Panel runat="server" ID="pnlEmailTab" CssClass="tab-panel h-100">
+                                    <div class="col-xs-12 col-md-8 d-flex flex-column">
+                                        <div>
+                                            <ul class="nav nav-pills">
+                                                <li id="tabEmail" runat="server" class="active">
+                                                    <asp:LinkButton ID="lnkEmail" runat="server" Text="Email" CssClass="show-pill" OnClick="lnkEmail_Click" pill="email-tab" />
+                                                </li>
+                                                <li id="tabSMS" runat="server">
+                                                    <asp:LinkButton ID="lnkSms" runat="server" Text="SMS" CssClass="show-pill" OnClick="lnkSms_Click" pill="sms-tab" />
+                                                </li>
+                                                <li id="tabPush" runat="server">
+                                                    <asp:LinkButton ID="lnkPush" runat="server" Text="Push" CssClass="show-pill" OnClick="lnkPush_Click" pill="push-tab" />
+                                                </li>
+                                            </ul>
+                                            <hr />
+                                        </div>
+                                        <div class="tabContent flex-fill">
+                                            <asp:Panel runat="server" ID="pnlEmailTab" CssClass="tab-panel d-flex flex-column h-100">
                                                 <div class="row">
                                                     <div class="col-sm-4">
                                                         <Rock:RockLiteral runat="server" ID="litEmailConfirmationFrom" Label="From" />
@@ -1293,17 +1301,19 @@
                                                         <Rock:RockLiteral runat="server" ID="litEmailConfirmationBcc" Label="BCC" />
                                                     </div>
                                                 </div>
-                                                <iframe
-                                                    runat="server"
-                                                    id="ifConfirmationEmailPreview"
-                                                    name="confirmationemailpreview-iframe"
-                                                    src="javascript: window.frameElement.getAttribute('srcdoc');"
-                                                    frameborder="0"
-                                                    border="0"
-                                                    cellspacing="0"
-                                                    scrolling="yes"
-                                                    class="w-100"
-                                                    style="min-height: -webkit-fill-available" />
+                                                <div class="bg-primary flex-fill position-relative mb-3 mb-sm-0" style="min-height:300px;">
+                                                    <iframe
+                                                        runat="server"
+                                                        id="ifConfirmationEmailPreview"
+                                                        name="confirmationemailpreview-iframe"
+                                                        src="javascript: window.frameElement.getAttribute('srcdoc');"
+                                                        frameborder="0"
+                                                        border="0"
+                                                        cellspacing="0"
+                                                        scrolling="yes"
+                                                        class="position-absolute w-100 h-100 inset-0" />
+                                                </div>
+
                                             </asp:Panel>
                                             <asp:Panel runat="server" ID="pnlSmsTab" CssClass="tab-panel">
                                                 <div class="row">
@@ -1352,10 +1362,10 @@
                         </div>
                     </div>
                     <div class="actions clearfix mt-3">
-                            <asp:LinkButton ID="btnConfirmationPrevious" runat="server" AccessKey="p" ToolTip="Alt+p" Text="Previous" CssClass="btn btn-default" CausesValidation="false" OnClick="btnConfirmationPrevious_Click" />
+                            <asp:LinkButton ID="btnConfirmationPrevious" runat="server" AccessKey="p" ToolTip="Alt+p" Text="Previous" CssClass="btn btn-default mb-2 mb-sm-0 " CausesValidation="false" OnClick="btnConfirmationPrevious_Click" />
                             <div class="pull-right">
-                                <asp:LinkButton ID="btnSaveAsDraft" runat="server" Text="Save as Draft" CssClass="btn btn-default" CausesValidation="true" ValidationGroup="vgConfirmation" OnClick="btnSaveAsDraft_Click" />
-                                <asp:LinkButton ID="btnSend" runat="server" Text="Send" CssClass="btn btn-primary" CausesValidation="true" ValidationGroup="vgConfirmation" OnClick="btnSend_Click" />
+                                <asp:LinkButton ID="btnSaveAsDraft" runat="server" Text="Save as Draft" CssClass="btn btn-default mb-2 mb-sm-0" CausesValidation="true" ValidationGroup="vgConfirmation" OnClick="btnSaveAsDraft_Click" />
+                                <asp:LinkButton ID="btnSend" runat="server" Text="Send" CssClass="btn btn-primary mb-2 mb-sm-0" CausesValidation="true" ValidationGroup="vgConfirmation" OnClick="btnSend_Click" />
                             </div>
                     </div>
                 </asp:Panel>
