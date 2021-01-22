@@ -1590,6 +1590,7 @@ function onTaskCompleted( resultData )
         /// </summary>
         private void ShowEmailEditor()
         {
+            lTitle.Text = "Email Editor";
             tbTestEmailAddress.Text = this.CurrentPerson.Email;
 
             ifEmailDesigner.Attributes["srcdoc"] = hfEmailEditorHtml.Value;
@@ -1618,7 +1619,7 @@ function onTaskCompleted( resultData )
         {
             ifEmailDesigner.Attributes["srcdoc"] = hfEmailEditorHtml.Value;
             pnlEmailEditor.Visible = false;
-
+            lTitle.Text = tbCommunicationName.Text.FormatAsHtmlTitle();
             if ( ShouldShowSms() )
             {
                 ShowMobileTextEditor();
@@ -1984,6 +1985,8 @@ function onTaskCompleted( resultData )
         /// </summary>
         private void ShowEmailSummary()
         {
+            lTitle.Text = tbCommunicationName.Text.FormatAsHtmlTitle();
+
             // See if the template supports preview-text
             HtmlAgilityPack.HtmlDocument templateDoc = new HtmlAgilityPack.HtmlDocument();
             templateDoc.LoadHtml( hfEmailEditorHtml.Value );

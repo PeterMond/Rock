@@ -18,6 +18,18 @@
                         <asp:LinkButton ID="btnUseSimpleEditor" runat="server" Text="Use Simple Editor" OnClick="btnUseSimpleEditor_Click" />
                     </div>
                 </asp:Panel>
+
+                 <%-- Put the email send test and preview button in an updatepanel to avoid flicker with the email editor --%>
+                <asp:UpdatePanel ID="upEmailSendTest" runat="server">
+                    <ContentTemplate>
+                        <div class="position-absolute right-0 top-0">
+                            <Rock:NotificationBox ID="nbEmailTestResult" CssClass="margin-t-md" runat="server" NotificationBoxType="Success" Text="Test Email has been sent." Visible="false" Dismissable="true" />
+                            <a class="btn btn-xs btn-default js-email-sendtest" href="#">Send Test</a>
+                            <asp:LinkButton ID="btnEmailPreview" runat="server" CssClass="btn btn-xs btn-default js-saveeditorhtml" Text="Preview" OnClick="btnEmailPreview_Click" />
+                            <asp:LinkButton ID="btnEmailEditorSaveDraft" runat="server" CssClass="btn btn-xs btn-default js-saveeditorhtml" Text="Save" OnClick="btnEmailEditorSaveDraft_Click" />
+                        </div>
+                    </ContentTemplate>
+                </asp:UpdatePanel>
             </div>
 
             <div class="panel-body">
@@ -297,17 +309,7 @@
                 <%-- Email Editor --%>
                 <asp:Panel ID="pnlEmailEditor" CssClass="js-navigation-panel emaileditor-wrapper d-flex flex-column h-100 " runat="server" Visible="false">
 
-                            <%-- Put the email send test and preview button in an updatepanel to avoid flicker with the email editor --%>
-                            <asp:UpdatePanel ID="upEmailSendTest" runat="server">
-                                <ContentTemplate>
-                                    <div class="position-absolute right-0 top-0">
-                                        <Rock:NotificationBox ID="nbEmailTestResult" CssClass="margin-t-md" runat="server" NotificationBoxType="Success" Text="Test Email has been sent." Visible="false" Dismissable="true" />
-                                        <a class="btn btn-xs btn-default js-email-sendtest" href="#">Send Test</a>
-                                        <asp:LinkButton ID="btnEmailPreview" runat="server" CssClass="btn btn-xs btn-default js-saveeditorhtml" Text="Preview" OnClick="btnEmailPreview_Click" />
-                                        <asp:LinkButton ID="btnEmailEditorSaveDraft" runat="server" CssClass="btn btn-xs btn-default js-saveeditorhtml" Text="Save" OnClick="btnEmailEditorSaveDraft_Click" />
-                                    </div>
-                                </ContentTemplate>
-                            </asp:UpdatePanel>
+                           
 
 
                         <section id="emaileditor" class="panel-fill-body position-relative flex-fill styled-scroll">
