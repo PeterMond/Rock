@@ -21,7 +21,7 @@
                     </asp:Panel>
 
                     <%-- Put the email send test and preview button in an updatepanel to avoid flicker with the email editor --%>
-                    <asp:UpdatePanel ID="upEmailSendTest" runat="server">
+                    <asp:UpdatePanel ID="upEmailSendTest" runat="server" Visible="false">
                         <ContentTemplate>
                             <Rock:NotificationBox ID="nbEmailTestResult" CssClass="margin-t-md" runat="server" NotificationBoxType="Success" Text="Test Email has been sent." Visible="false" Dismissable="true" />
                             <a class="btn btn-xs btn-default js-email-sendtest" href="#">Send Test</a>

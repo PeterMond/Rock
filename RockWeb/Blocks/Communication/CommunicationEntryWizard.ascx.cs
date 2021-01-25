@@ -1595,6 +1595,7 @@ function onTaskCompleted( resultData )
 
             ifEmailDesigner.Attributes["srcdoc"] = hfEmailEditorHtml.Value;
             pnlEmailEditor.Visible = true;
+            upEmailSendTest.Visible = true;
             nbEmailTestResult.Visible = false;
             SetNavigationHistory( pnlEmailEditor );
         }
@@ -1607,6 +1608,7 @@ function onTaskCompleted( resultData )
         protected void btnEmailEditorPrevious_Click( object sender, EventArgs e )
         {
             pnlEmailEditor.Visible = false;
+            upEmailSendTest.Visible = false;
             ShowEmailSummary();
         }
 
@@ -1619,6 +1621,7 @@ function onTaskCompleted( resultData )
         {
             ifEmailDesigner.Attributes["srcdoc"] = hfEmailEditorHtml.Value;
             pnlEmailEditor.Visible = false;
+            upEmailSendTest.Visible = false;
             lTitle.Text = tbCommunicationName.Text.FormatAsHtmlTitle();
             if ( ShouldShowSms() )
             {
