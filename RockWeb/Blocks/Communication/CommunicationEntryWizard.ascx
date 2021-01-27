@@ -10,7 +10,7 @@
 
         <asp:Panel ID="pnlView" runat="server" CssClass="panel panel-block">
 
-            <div class="panel-heading">
+            <div class="panel-heading panel-follow">
                 <h1 class="panel-title"><i class="fa fa-comment"></i>&nbsp;<asp:Literal ID="lTitle" runat="server" /></h1>
 
                 <div class="pull-right">
@@ -30,82 +30,92 @@
                         </ContentTemplate>
                     </asp:UpdatePanel>
                 </div>
+                <div class="rock-fullscreen-toggle js-fullscreen-trigger"></div>
             </div>
 
             <div class="panel-body">
                 <%-- List Selection --%>
                 <asp:Panel ID="pnlListSelection" CssClass="js-navigation-panel h-100 d-flex flex-column" runat="server">
-                    <h1 class="step-title text-break">List Selection</h1>
+                    <div class="panel-fill-body position-relative flex-fill styled-scroll">
+                        <div class="position-absolute inset-0 overflow-auto">
+                            <div class="panel-body">
+                                <div>
+                                    <h1 class="step-title text-break">List Selection</h1>
 
-                    <Rock:NotificationBox ID="nbCommunicationNotWizardCompatible" runat="server" NotificationBoxType="Info">
-                        This communication uses a template that is not compatible with the email wizard. You can continue with the email wizard, but the main content of the email will be replaced when the Email Wizard compatible template is selected. To keep the content, click 'Use Simple Editor' to use the simple communication editor.
-                    </Rock:NotificationBox>
+                                    <Rock:NotificationBox ID="nbCommunicationNotWizardCompatible" runat="server" NotificationBoxType="Info">
+                                        This communication uses a template that is not compatible with the email wizard. You can continue with the email wizard, but the main content of the email will be replaced when the Email Wizard compatible template is selected. To keep the content, click 'Use Simple Editor' to use the simple communication editor.
+                                    </Rock:NotificationBox>
 
-                    <div class="row">
-                        <div class="col-sm-8">
-                            Select the communication list you would like use for your audience. You can further customize your recipient list by applying segments.
-                        </div>
-                        <div class="col-sm-4">
-                            <Rock:BootstrapButton ID="btnManualList" runat="server" CssClass="btn-link text-primary pull-right" Text="Manual List" OnClick="btnManualList_Click" />
+                                    <div class="row">
+                                        <div class="col-sm-8">
+                                            Select the communication list you would like use for your audience. You can further customize your recipient list by applying segments.
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <Rock:BootstrapButton ID="btnManualList" runat="server" CssClass="btn btn-link btn-xs text-primary pull-right" Text="Manual List" OnClick="btnManualList_Click" />
+                                        </div>
+                                    </div>
+
+                                    <hr />
+                                </div>
+
+                                <asp:ValidationSummary ID="vsRecipientSelection" runat="server" HeaderText="Please correct the following:" ValidationGroup="vgRecipientSelection" CssClass="alert alert-warning" />
+
+                                <Rock:NotificationBox ID="nbRecipientsAlert" runat="server" NotificationBoxType="Validation" />
+
+                                <div class="row">
+                                    <asp:Panel ID="pnlListSelectionList" runat="server" CssClass="col-lg-6">
+                                        <Rock:RockDropDownList
+                                            ID="ddlCommunicationGroupList"
+                                            runat="server"
+                                            Label="Communication List"
+                                            CssClass="input-width-xxl"
+                                            ValidationGroup="vgRecipientSelection"
+                                            Required="true"
+                                            OnSelectedIndexChanged="ddlCommunicationGroupList_SelectedIndexChanged"
+                                            AutoPostBack="true" />
+
+                                        <asp:Panel ID="pnlCommunicationGroupSegments" runat="server">
+                                            <label>Segments</label>
+                                            <p>Optionally, further refine your recipients by filtering by segment.</p>
+                                            <asp:CheckBoxList
+                                                ID="cblCommunicationGroupSegments"
+                                                runat="server"
+                                                RepeatDirection="Horizontal"
+                                                CssClass="margin-b-lg"
+                                                ValidationGroup="vgRecipientSelection"
+                                                OnSelectedIndexChanged="cblCommunicationGroupSegments_SelectedIndexChanged"
+                                                AutoPostBack="true" />
+
+                                            <Rock:RockRadioButtonList
+                                                ID="rblCommunicationGroupSegmentFilterType"
+                                                runat="server"
+                                                Label="Recipients Must Meet"
+                                                RepeatDirection="Horizontal"
+                                                ValidationGroup="vgRecipientSelection"
+                                                AutoPostBack="true"
+                                                OnSelectedIndexChanged="rblCommunicationGroupSegmentFilterType_SelectedIndexChanged" />
+
+                                            <asp:Panel ID="pnlRecipientFromListCount" runat="server" CssClass="label label-info">
+                                                <asp:Literal ID="lRecipientFromListCount" runat="server" Text="" />
+                                            </asp:Panel>
+                                        </asp:Panel>
+                                    </asp:Panel>
+                                    <div class="col-lg-6">
+                                        <Rock:RockCheckBox
+                                            ID="cbDuplicatePreventionOption"
+                                            runat="server"
+                                            Label="Prevent Duplicate Email/SMS Addresses"
+                                            Text="Yes"
+                                            Help="Check this option to prevent communications from being sent to people with the same email/SMS addresses.
+                                            This will mean two people who share an address will not receive a personalized communication, only one of them will." />
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <hr />
 
-                    <asp:ValidationSummary ID="vsRecipientSelection" runat="server" HeaderText="Please correct the following:" ValidationGroup="vgRecipientSelection" CssClass="alert alert-warning" />
-
-                    <Rock:NotificationBox ID="nbRecipientsAlert" runat="server" NotificationBoxType="Validation" />
-
-                    <div class="row">
-                        <asp:Panel ID="pnlListSelectionList" runat="server" CssClass="col-lg-6">
-                            <Rock:RockDropDownList
-                                ID="ddlCommunicationGroupList"
-                                runat="server"
-                                Label="Communication List"
-                                CssClass="input-width-xxl"
-                                ValidationGroup="vgRecipientSelection"
-                                Required="true"
-                                OnSelectedIndexChanged="ddlCommunicationGroupList_SelectedIndexChanged"
-                                AutoPostBack="true" />
-
-                            <asp:Panel ID="pnlCommunicationGroupSegments" runat="server">
-                                <label>Segments</label>
-                                <p>Optionally, further refine your recipients by filtering by segment.</p>
-                                <asp:CheckBoxList
-                                    ID="cblCommunicationGroupSegments"
-                                    runat="server"
-                                    RepeatDirection="Horizontal"
-                                    CssClass="margin-b-lg"
-                                    ValidationGroup="vgRecipientSelection"
-                                    OnSelectedIndexChanged="cblCommunicationGroupSegments_SelectedIndexChanged"
-                                    AutoPostBack="true" />
-
-                                <Rock:RockRadioButtonList
-                                    ID="rblCommunicationGroupSegmentFilterType"
-                                    runat="server"
-                                    Label="Recipients Must Meet"
-                                    RepeatDirection="Horizontal"
-                                    ValidationGroup="vgRecipientSelection"
-                                    AutoPostBack="true"
-                                    OnSelectedIndexChanged="rblCommunicationGroupSegmentFilterType_SelectedIndexChanged" />
-
-                                <asp:Panel ID="pnlRecipientFromListCount" runat="server" CssClass="label label-info">
-                                    <asp:Literal ID="lRecipientFromListCount" runat="server" Text="" />
-                                </asp:Panel>
-                            </asp:Panel>
-                        </asp:Panel>
-                        <div class="col-lg-6">
-                            <Rock:RockCheckBox
-                                ID="cbDuplicatePreventionOption"
-                                runat="server"
-                                Label="Prevent Duplicate Email/SMS Addresses"
-                                Text="Yes"
-                                Help="Check this option to prevent communications from being sent to people with the same email/SMS addresses.
-                                This will mean two people who share an address will not receive a personalized communication, only one of them will." />
-                        </div>
-                    </div>
-
-                    <div class="actions mt-auto">
+                    <div class="actions mt-3">
                         <asp:LinkButton
                             ID="btnRecipientSelectionNext"
                             runat="server"
@@ -122,65 +132,64 @@
 
                 <%-- Recipient List --%>
                 <asp:Panel ID="pnlIndividualRecipientList" CssClass="js-navigation-panel d-flex flex-column h-100" runat="server" Visible="false">
+                                <div>
+                                    <h1 class="step-title text-break">Recipient List</h1>
+                                    <p>Below is a listing of your current recipients. You can add or remove individuals from this list before continuing.</p>
+                                    <hr />
 
-
-                        <div>
-                            <h1 class="step-title text-break">Recipient List</h1>
-                            <p>Below is a listing of your current recipients. You can add or remove individuals from this list before continuing.</p>
-                            <hr />
-
-                            <asp:ValidationSummary
-                                ID="vsIndividualRecipientList"
-                                runat="server"
-                                HeaderText="Please correct the following:"
-                                ValidationGroup="vsIndividualRecipientList"
-                                CssClass="alert alert-warning" />
-
-                            <Rock:NotificationBox
-                                ID="nbIndividualListWarning"
-                                runat="server"
-                                NotificationBoxType="Validation" />
-
-                            <div class="d-flex margin-b-md">
-                                <div class="ml-sm-auto">
-                                    <Rock:PersonPicker
-                                        ID="ppAddPerson"
+                                    <asp:ValidationSummary
+                                        ID="vsIndividualRecipientList"
                                         runat="server"
-                                        CssClass="picker-menu-right"
-                                        Label="Person"
-                                        PersonName="Add Person"
-                                        OnSelectPerson="ppAddPerson_SelectPerson"
-                                        EnableSelfSelection="true" />
+                                        HeaderText="Please correct the following:"
+                                        ValidationGroup="vsIndividualRecipientList"
+                                        CssClass="alert alert-warning" />
+
+                                    <Rock:NotificationBox
+                                        ID="nbIndividualListWarning"
+                                        runat="server"
+                                        NotificationBoxType="Validation" />
+
+                                    <div class="d-flex margin-b-md">
+                                        <div class="ml-sm-auto">
+                                            <Rock:PersonPicker
+                                                ID="ppAddPerson"
+                                                runat="server"
+                                                CssClass="picker-menu-right"
+                                                Label="Person"
+                                                PersonName="Add Person"
+                                                OnSelectPerson="ppAddPerson_SelectPerson"
+                                                EnableSelfSelection="true" />
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="position-relative flex-fill styled-scroll" style="min-height:200px;">
-                            <div class="position-absolute inset-0 overflow-auto">
-                            <Rock:Grid
-                                ID="gIndividualRecipients"
-                                runat="server"
-                                OnRowDataBound="gIndividualRecipients_RowDataBound"
-                                HideDeleteButtonForIsSystem="false"
-                                ShowConfirmDeleteDialog="false">
-                                <Columns>
-                                    <Rock:SelectField></Rock:SelectField>
-                                    <asp:BoundField DataField="FullName" HeaderText="Name" SortExpression="FullName" />
-                                    <Rock:RockLiteralField ID="lRecipientAlertEmail" HeaderText="Email" />
-                                    <Rock:RockLiteralField ID="lRecipientAlertSMS" HeaderText="SMS" />
-                                    <Rock:RockLiteralField ID="lRecipientAlert" HeaderText="Notes" />
-                                    <Rock:DeleteField OnClick="gIndividualRecipients_DeleteClick" />
-                                </Columns>
-                            </Rock:Grid>
-                            </div>
-                        </div>
-                        <div class="mt-3">
-                                <asp:LinkButton ID="btnDeleteSelectedRecipients"
-                                    runat="server"
-                                    CssClass="btn btn-outline-primary"
-                                    OnClick="btnDeleteSelectedRecipients_Click"
-                                    Text="Remove Selected" />
-                            </div>
-                    <div class="actions mt-3">
+                                <div class="position-relative flex-fill styled-scroll" style="min-height:200px;">
+                                    <div class="position-absolute inset-0 overflow-auto">
+                                    <Rock:Grid
+                                        ID="gIndividualRecipients"
+                                        runat="server"
+                                        DisplayType="Light"
+                                        OnRowDataBound="gIndividualRecipients_RowDataBound"
+                                        HideDeleteButtonForIsSystem="false"
+                                        ShowConfirmDeleteDialog="false">
+                                        <Columns>
+                                            <Rock:SelectField></Rock:SelectField>
+                                            <asp:BoundField DataField="FullName" HeaderText="Name" SortExpression="FullName" />
+                                            <Rock:RockLiteralField ID="lRecipientAlertEmail" HeaderText="Email" />
+                                            <Rock:RockLiteralField ID="lRecipientAlertSMS" HeaderText="SMS" />
+                                            <Rock:RockLiteralField ID="lRecipientAlert" HeaderText="Notes" />
+                                            <Rock:DeleteField OnClick="gIndividualRecipients_DeleteClick" />
+                                        </Columns>
+                                    </Rock:Grid>
+                                    </div>
+                                </div>
+                                <div class="mt-3">
+                                        <asp:LinkButton ID="btnDeleteSelectedRecipients"
+                                            runat="server"
+                                            CssClass="btn btn-sm btn-outline-primary"
+                                            OnClick="btnDeleteSelectedRecipients_Click"
+                                            Text="Remove Selected" />
+                                </div>
+                    <div class="actions panel-actions-bordered">
                         <asp:LinkButton ID="btnRecipientListNext"
                             runat="server"
                             AccessKey="n"
@@ -195,58 +204,64 @@
 
                 <%-- Communication Delivery, Medium Selection --%>
                 <asp:Panel ID="pnlCommunicationDelivery" CssClass="js-navigation-panel h-100 d-flex flex-column" runat="server" Visible="false">
-                    <div>
-                        <h1 class="step-title text-break">Communication Details</h1>
-                        <p>Provide additional information about your communication including when and how it should be sent.</p>
-                        <hr />
-                    </div>
+                    <div class="panel-fill-body position-relative flex-fill styled-scroll">
+                        <div class="position-absolute inset-0 overflow-auto">
+                            <div class="panel-body">
+                                <div>
+                                    <h1 class="step-title text-break">Communication Details</h1>
+                                    <p>Provide additional information about your communication including when and how it should be sent.</p>
+                                    <hr />
+                                </div>
 
-                    <Rock:NotificationBox ID="nbNoCommunicationTransport" runat="server" CssClass="margin-t-md" NotificationBoxType="Warning" Title="Warning" />
+                                <Rock:NotificationBox ID="nbNoCommunicationTransport" runat="server" CssClass="margin-t-md" NotificationBoxType="Warning" Title="Warning" />
 
-                    <asp:ValidationSummary ID="vsCommunicationDelivery" runat="server" HeaderText="Please correct the following:" ValidationGroup="vgCommunicationDelivery" CssClass="alert alert-validation" />
-                    <div class="row">
-                        <div class="col-xs-12 col-sm-9 col-md-6">
-                            <Rock:RockTextBox ID="tbCommunicationName" runat="server" Label="Communication Name" Help="This name is used internally to describe the communication. It is not sent as a part of the communication." Required="true" ValidationGroup="vgCommunicationDelivery" MaxLength="100" />
+                                <asp:ValidationSummary ID="vsCommunicationDelivery" runat="server" HeaderText="Please correct the following:" ValidationGroup="vgCommunicationDelivery" CssClass="alert alert-validation" />
+                                <div class="row">
+                                    <div class="col-xs-12 col-sm-9 col-md-6">
+                                        <Rock:RockTextBox ID="tbCommunicationName" runat="server" Label="Communication Name" Help="This name is used internally to describe the communication. It is not sent as a part of the communication." Required="true" ValidationGroup="vgCommunicationDelivery" MaxLength="100" />
+                                    </div>
+                                    <div class="col-xs-12 col-sm-3 col-md-6">
+                                        <Rock:Switch
+                                            ID="swBulkCommunication"
+                                            runat="server"
+                                            label=" "
+                                            Checked="false"
+                                            FormGroupCssClass="custom-switch-centered hide-label-sm"
+                                            Text="Bulk" />
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <Rock:RockRadioButtonList
+                                            runat="server"
+                                            ID="rblCommunicationMedium"
+                                            Label="Communication Medium"
+                                            Help="The communication medium that you would like to send your message through."
+                                            RepeatDirection="Horizontal"
+                                            CssClass="js-medium-radio" />
+
+                                        <span class="small help-block js-medium-recipientpreference-notification" style="display: none">Selecting 'Recipient Preference' will require adding content for all active mediums.</span>
+                                    </div>
+                                </div>
+
+                                <Rock:ModalDialog runat="server" ID="mdScheduleSend" Title="Schedule Send" OnSaveClick="mdScheduleSend_SaveClick">
+                                    <Content>
+                                        <Rock:NotificationBox ID="nbSendCommunicationDateTimeWarning" runat="server" NotificationBoxType="Danger" Visible="false" />
+                                        <Rock:DateTimePicker runat="server" CssClass="js-send-communications-date" ID="dtpSendCommunicationDateTime" Label="Send Communications Date and Time" />
+                                        <Rock:RockCheckBox runat="server" CssClass="js-send-immediately" ID="chkSendImmediately" Text="Send Immediately" Checked="true" />
+                                    </Content>
+                                </Rock:ModalDialog>
+                                <div>
+                                <asp:LinkButton runat="server" ID="lbScheduleSend" CssClass="btn btn-link pl-0 mb-4" OnClick="lbScheduleSend_Click">
+                                    <i class='fa fa-calendar' aria-hidden='true'></i> Send: Immediately
+                                </asp:LinkButton>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-xs-12 col-sm-3 col-md-6">
-                            <Rock:Switch
-                                ID="swBulkCommunication"
-                                runat="server"
-                                label=" "
-                                Checked="false"
-                                FormGroupCssClass="custom-switch-centered hide-label-sm"
-                                Text="Bulk" />
-                        </div>
                     </div>
 
-                    <div class="row">
-                        <div class="col-md-12">
-                            <Rock:RockRadioButtonList
-                                runat="server"
-                                ID="rblCommunicationMedium"
-                                Label="Communication Medium"
-                                Help="The communication medium that you would like to send your message through."
-                                RepeatDirection="Horizontal"
-                                CssClass="js-medium-radio" />
-
-                            <span class="small help-block js-medium-recipientpreference-notification" style="display: none">Selecting 'Recipient Preference' will require adding content for all active mediums.</span>
-                        </div>
-                    </div>
-
-                    <Rock:ModalDialog runat="server" ID="mdScheduleSend" Title="Schedule Send" OnSaveClick="mdScheduleSend_SaveClick">
-                        <Content>
-                            <Rock:NotificationBox ID="nbSendCommunicationDateTimeWarning" runat="server" NotificationBoxType="Danger" Visible="false" />
-                            <Rock:DateTimePicker runat="server" CssClass="js-send-communications-date" ID="dtpSendCommunicationDateTime" Label="Send Communications Date and Time" />
-                            <Rock:RockCheckBox runat="server" CssClass="js-send-immediately" ID="chkSendImmediately" Text="Send Immediately" Checked="true" />
-                        </Content>
-                    </Rock:ModalDialog>
-                    <div>
-                    <asp:LinkButton runat="server" ID="lbScheduleSend" CssClass="btn btn-link pl-0 mb-4" OnClick="lbScheduleSend_Click">
-                        <i class='fa fa-calendar' aria-hidden='true'></i> Send: Immediately
-                    </asp:LinkButton>
-                    </div>
-
-                    <div class="actions mt-auto">
+                    <div class="actions mt-3">
                         <asp:LinkButton ID="btnCommunicationDeliveryPrevious" runat="server" AccessKey="p" ToolTip="Alt+p" Text="Previous" CssClass="btn btn-default js-wizard-navigation" CausesValidation="false" OnClick="btnCommunicationDeliveryPrevious_Click" />
                         <asp:LinkButton ID="btnCommunicationDeliveryNext" runat="server" AccessKey="n" Text="Next" DataLoadingText="Next" CssClass="btn btn-primary pull-right js-wizard-navigation" ValidationGroup="vgCommunicationDelivery" CausesValidation="true" OnClick="btnCommunicationDeliveryNext_Click" />
                     </div>
@@ -259,46 +274,47 @@
                         <div class="position-absolute inset-0 overflow-auto">
                             <div class="panel-body">
 
-                    <div>
-                        <div class="row">
-                            <div class="col-sm-8">
-                                <h1 class="step-title text-break">Communication Template</h1>
-                                <p>Templates allow you to speed up the communication creation and provide consistency. Administrate Templates</p>
-                            </div>
-                            <div class="d-flex col-sm-4">
-                                <div class="ml-sm-auto">
-                                    <Rock:CategoryPicker ID="cpCommunicationTemplate" runat="server" AllowMultiSelect="false" Label="Category Filter" EntityTypeName="Rock.Model.CommunicationTemplate" OnSelectItem="cpCommunicationTemplate_SelectItem" />
+                                <div>
+                                    <div class="row">
+                                        <div class="col-sm-8">
+                                            <h1 class="step-title text-break">Communication Template</h1>
+                                            <p>Templates allow you to speed up the communication creation and provide consistency. Administrate Templates</p>
+                                        </div>
+                                        <div class="d-flex col-sm-4">
+                                            <div class="ml-sm-auto">
+                                                <Rock:CategoryPicker ID="cpCommunicationTemplate" runat="server" AllowMultiSelect="false" Label="Category Filter" EntityTypeName="Rock.Model.CommunicationTemplate" OnSelectItem="cpCommunicationTemplate_SelectItem" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr/>
+                                </div>
+
+                                <Rock:NotificationBox ID="nbTemplateSelectionWarning" runat="server" NotificationBoxType="Danger" Visible="false" />
+                                <div class="row template-selection">
+                                    <asp:Repeater ID="rptSelectTemplate" runat="server" OnItemDataBound="rptSelectTemplate_ItemDataBound">
+                                        <ItemTemplate>
+                                            <div class="col-md-4 col-sm-6">
+                                                <asp:LinkButton ID="btnSelectTemplate" CssClass="communication-template" runat="server" OnClick="btnSelectTemplate_Click">
+                                                    <div class="row">
+                                                        <div class="col-xs-5">
+                                                            <asp:Literal ID="lTemplateImagePreview" runat="server"></asp:Literal>
+                                                        </div>
+                                                        <div class="col-xs-7">
+                                                            <label>
+                                                                <asp:Literal ID="lTemplateName" runat="server"></asp:Literal></label>
+                                                            <p>
+                                                                <asp:Literal ID="lTemplateDescription" runat="server"></asp:Literal>
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </asp:LinkButton>
+                                            </div>
+                                        </ItemTemplate>
+                                    </asp:Repeater>
                                 </div>
                             </div>
                         </div>
-                        <hr/>
                     </div>
-
-                    <Rock:NotificationBox ID="nbTemplateSelectionWarning" runat="server" NotificationBoxType="Danger" Visible="false" />
-                    <div class="row template-selection">
-                        <asp:Repeater ID="rptSelectTemplate" runat="server" OnItemDataBound="rptSelectTemplate_ItemDataBound">
-                            <ItemTemplate>
-                                <div class="col-md-4 col-sm-6">
-                                    <asp:LinkButton ID="btnSelectTemplate" CssClass="communication-template" runat="server" OnClick="btnSelectTemplate_Click">
-                                        <div class="row">
-                                            <div class="col-xs-5">
-                                                <asp:Literal ID="lTemplateImagePreview" runat="server"></asp:Literal>
-                                            </div>
-                                            <div class="col-xs-7">
-                                                <label>
-                                                    <asp:Literal ID="lTemplateName" runat="server"></asp:Literal></label>
-                                                <p>
-                                                    <asp:Literal ID="lTemplateDescription" runat="server"></asp:Literal>
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </asp:LinkButton>
-                                </div>
-                            </ItemTemplate>
-                        </asp:Repeater>
-                    </div>
-
-                    </div></div></div>
 
                     <div class="actions mt-3">
                         <asp:LinkButton ID="btnTemplateSelectionPrevious" runat="server" AccessKey="p" ToolTip="Alt+p" Text="Previous" CssClass="btn btn-default js-wizard-navigation" CausesValidation="false" OnClick="btnTemplateSelectionPrevious_Click" />
@@ -1109,65 +1125,71 @@
 
                 <%-- Email Summary --%>
                 <asp:Panel ID="pnlEmailSummary" CssClass="js-navigation-panel h-100 d-flex flex-column" runat="server" Visible="false">
-                    <div>
-                        <h1 class="step-title text-break">Email Summary</h1>
-                        <p>Provide the basic information about your email.</p>
-                        <hr/>
-                    </div>
-
-                    <asp:ValidationSummary ID="vsEmailSummary" runat="server" HeaderText="Please correct the following:" ValidationGroup="vgEmailSummary" CssClass="alert alert-validation" />
-
-                    <div class="row">
-                        <div class="col-md-6">
-                            <Rock:RockTextBox ID="tbFromName" runat="server" Label="From Name" Required="true" ValidationGroup="vgEmailSummary" MaxLength="100" Help="<span class='tip tip-lava'></span>" />
-                        </div>
-                        <div class="col-md-6">
-                            <Rock:EmailBox ID="ebFromAddress" runat="server" Label="From Address" Required="true" AllowLava="true" ValidationGroup="vgEmailSummary" />
-                            <asp:HiddenField ID="hfShowAdditionalFields" runat="server" />
-                            <div class="pull-right">
-                                <a href="#" class="btn btn-xs btn-link js-show-additional-fields">Show Additional Fields</a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <asp:Panel ID="pnlEmailSummaryAdditionalFields" runat="server" CssClass="js-additional-fields" Style="display: none">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <Rock:EmailBox ID="ebReplyToAddress" runat="server" Label="Reply To Address" AllowLava="true" />
-                            </div>
-                            <div class="col-md-6">
-                            </div>
-                        </div>
-                        <div class="well">
-                            <p><strong>Note:</strong> Because Rock personalizes emails, CC and BCC recipients will receive one email per recipient.</p>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <Rock:EmailBox ID="ebCCList" runat="server" Label="CC List" AllowMultiple="true" Help="Comma-delimited list of email addresses that will be copied on the email sent to every recipient. Lava can be used to access recipent data. <span class='tip tip-lava'></span>" AllowLava="true" />
+                    <div class="panel-fill-body position-relative flex-fill styled-scroll">
+                        <div class="position-absolute inset-0 overflow-auto">
+                            <div class="panel-body">
+                                <div>
+                                    <h1 class="step-title text-break">Email Summary</h1>
+                                    <p>Provide the basic information about your email.</p>
+                                    <hr/>
                                 </div>
-                                <div class="col-md-6">
-                                    <Rock:EmailBox ID="ebBCCList" runat="server" Label="BCC List" AllowMultiple="true" Help="Comma-delimited list of email addresses that will be blind copied on the email sent to every recipient. Lava can be used to access recipent data. <span class='tip tip-lava'></span>" AllowLava="true" />
+
+                                <asp:ValidationSummary ID="vsEmailSummary" runat="server" HeaderText="Please correct the following:" ValidationGroup="vgEmailSummary" CssClass="alert alert-validation" />
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <Rock:RockTextBox ID="tbFromName" runat="server" Label="From Name" Required="true" ValidationGroup="vgEmailSummary" MaxLength="100" Help="<span class='tip tip-lava'></span>" />
+                                    </div>
+                                    <div class="col-md-6">
+                                        <Rock:EmailBox ID="ebFromAddress" runat="server" Label="From Address" Required="true" AllowLava="true" ValidationGroup="vgEmailSummary" />
+                                        <asp:HiddenField ID="hfShowAdditionalFields" runat="server" />
+                                        <div class="pull-right">
+                                            <a href="#" class="btn btn-xs btn-link js-show-additional-fields">Show Additional Fields</a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <asp:Panel ID="pnlEmailSummaryAdditionalFields" runat="server" CssClass="js-additional-fields" Style="display: none">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <Rock:EmailBox ID="ebReplyToAddress" runat="server" Label="Reply To Address" AllowLava="true" />
+                                        </div>
+                                        <div class="col-md-6">
+                                        </div>
+                                    </div>
+                                    <div class="well">
+                                        <p><strong>Note:</strong> Because Rock personalizes emails, CC and BCC recipients will receive one email per recipient.</p>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <Rock:EmailBox ID="ebCCList" runat="server" Label="CC List" AllowMultiple="true" Help="Comma-delimited list of email addresses that will be copied on the email sent to every recipient. Lava can be used to access recipent data. <span class='tip tip-lava'></span>" AllowLava="true" />
+                                            </div>
+                                            <div class="col-md-6">
+                                                <Rock:EmailBox ID="ebBCCList" runat="server" Label="BCC List" AllowMultiple="true" Help="Comma-delimited list of email addresses that will be blind copied on the email sent to every recipient. Lava can be used to access recipent data. <span class='tip tip-lava'></span>" AllowLava="true" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </asp:Panel>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <Rock:RockTextBox ID="tbEmailSubject" runat="server" Label="Email Subject" Help="<span class='tip tip-lava'></span>" Required="true" ValidationGroup="vgEmailSummary" MaxLength="100" />
+                                        <asp:UpdatePanel ID="upEmailFileAttachments" runat="server">
+                                            <ContentTemplate>
+                                                <asp:HiddenField ID="hfEmailAttachedBinaryFileIds" runat="server" />
+                                                <Rock:FileUploader ID="fupEmailAttachments" runat="server" Label="Attachments" OnFileUploaded="fupEmailAttachments_FileUploaded" />
+                                                <asp:Literal ID="lEmailAttachmentListHtml" runat="server" />
+                                            </ContentTemplate>
+                                        </asp:UpdatePanel>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <Rock:RockTextBox ID="tbEmailPreview" runat="server" Label="Email Preview" TextMode="MultiLine" Rows="4" Help="A short summary of the email which will show in the inbox before the email is opened." />
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </asp:Panel>
-
-                    <div class="row">
-                        <div class="col-md-6">
-                            <Rock:RockTextBox ID="tbEmailSubject" runat="server" Label="Email Subject" Help="<span class='tip tip-lava'></span>" Required="true" ValidationGroup="vgEmailSummary" MaxLength="100" />
-                            <asp:UpdatePanel ID="upEmailFileAttachments" runat="server">
-                                <ContentTemplate>
-                                    <asp:HiddenField ID="hfEmailAttachedBinaryFileIds" runat="server" />
-                                    <Rock:FileUploader ID="fupEmailAttachments" runat="server" Label="Attachments" OnFileUploaded="fupEmailAttachments_FileUploaded" />
-                                    <asp:Literal ID="lEmailAttachmentListHtml" runat="server" />
-                                </ContentTemplate>
-                            </asp:UpdatePanel>
-                        </div>
-                        <div class="col-md-6">
-                            <Rock:RockTextBox ID="tbEmailPreview" runat="server" Label="Email Preview" TextMode="MultiLine" Rows="4" Help="A short summary of the email which will show in the inbox before the email is opened." />
-                        </div>
                     </div>
 
-                    <div class="actions clearfix mt-auto">
+                    <div class="actions clearfix mt-3">
                         <asp:LinkButton ID="btnEmailSummaryPrevious" runat="server" AccessKey="p" ToolTip="Alt+p" Text="Previous" CssClass="btn btn-default js-wizard-navigation" CausesValidation="false" OnClick="btnEmailSummaryPrevious_Click" />
                         <asp:LinkButton ID="btnEmailSummaryNext" runat="server" AccessKey="n" Text="Next" DataLoadingText="Next" CssClass="btn btn-primary pull-right js-wizard-navigation" ValidationGroup="vgEmailSummary" CausesValidation="true" OnClick="btnEmailSummaryNext_Click" />
                     </div>
