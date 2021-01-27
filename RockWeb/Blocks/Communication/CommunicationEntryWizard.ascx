@@ -335,8 +335,8 @@
 
 
                         <section id="emaileditor" class="panel-fill-body position-relative flex-fill styled-scroll">
-                            <div id="emaileditor-designer" class="position-absolute top-0 left-0" style="opacity: 0;">
-                                <iframe id="ifEmailDesigner" name="emaileditor-iframe" class="emaileditor-iframe js-emaileditor-iframe" runat="server" src="javascript: window.frameElement.getAttribute('srcdoc');" frameborder="0" border="0" cellspacing="0" style="display: none;"></iframe>
+                            <div id="emaileditor-designer" style="visibility:hidden;opacity: 0;">
+                                <iframe id="ifEmailDesigner" name="emaileditor-iframe" class="emaileditor-iframe js-emaileditor-iframe" runat="server" src="javascript: window.frameElement.getAttribute('srcdoc');" frameborder="0" border="0" cellspacing="0"></iframe>
                             </div>
                             <div id="emaileditor-properties" class="position-absolute top-0 right-0 bottom-0 overflow-auto">
                                     <div class="js-email-sendtest-inputs" style="display: none">
@@ -1029,7 +1029,7 @@
 
                         <%-- the contents editor-controls-markup is copied into the iframe --%>
                         <div id="editor-controls-markup" style="display: none;">
-                            <div id="editor-controls" class="editor-toolbar-container js-emaileditor-addon">
+                            <div id="editor-controls" class="editor-toolbar-container js-emaileditor-addon" style="min-height:72px;">
                                 <div class="js-editor-toolbar-content">
 
                                     <div class="component component-text" data-content="<h1>Title</h1><p> Can't wait to see what you have to say!</p>" data-state="template">
@@ -1708,16 +1708,16 @@
                 $editorIframe.load(function () {
                     frames['emaileditor-iframe'].document.head.appendChild(cssLink)
                         .appendChild(jqueryLoaderScript)
-                        .appendChild(fontAwesomeLink)
                         .appendChild(dragulaLoaderScript)
                         .appendChild(editorScript);
 
                     var $this = $(this);
                     var contents = $this.contents();
-
                     var editorMarkup = $('#editor-controls-markup').contents();
 
                     $(contents).find('body').prepend(editorMarkup);
+
+                    $('#emaileditor-designer').delay(200).css('visibility', 'visible').css('opacity', '1');
                 });
 
                 if ($editorIframe.length) {
@@ -1731,9 +1731,6 @@
                     Rock.controls.emailEditor.imageComponentHelper.initializeEventHandlers();
                     Rock.controls.emailEditor.textComponentHelper.initializeEventHandlers();
                     Rock.controls.emailEditor.sectionComponentHelper.initializeEventHandlers();
-
-                    $editorIframe.show();
-                    $('#emaileditor-designer').delay(300).css('opacity', '1');
                 }
             }
 
