@@ -51,7 +51,13 @@
                                             Select the communication list you would like use for your audience. You can further customize your recipient list by applying segments.
                                         </div>
                                         <div class="col-sm-4">
-                                            <Rock:BootstrapButton ID="btnManualList" runat="server" CssClass="btn btn-link btn-xs text-primary pull-right" Text="Manual List" OnClick="btnManualList_Click" />
+                                            <asp:LinkButton
+                                                ID="btnManualList"
+                                                CausesValidation="false"
+                                                runat="server"
+                                                CssClass="btn btn-link btn-xs text-primary pull-right"
+                                                Text="Manual List"
+                                                OnClick="btnManualList_Click" />
                                         </div>
                                     </div>
 

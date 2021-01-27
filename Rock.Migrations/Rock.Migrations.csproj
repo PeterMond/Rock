@@ -101,6 +101,10 @@
     <Compile Include="Migrations\202101141614338_Rollup_0114.Designer.cs">
       <DependentUpon>202101141614338_Rollup_0114.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202101271957546_FullWorksurfaceEmailEditorMigration.cs" />
+    <Compile Include="Migrations\202101271957546_FullWorksurfaceEmailEditorMigration.Designer.cs">
+      <DependentUpon>202101271957546_FullWorksurfaceEmailEditorMigration.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Version 12.0\Version 1.12.0\202012011753406_Rollup_1201.cs" />
     <Compile Include="Migrations\Version 12.0\Version 1.12.0\202012011753406_Rollup_1201.Designer.cs">
       <DependentUpon>202012011753406_Rollup_1201.cs</DependentUpon>
@@ -1572,6 +1576,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202101141614338_Rollup_0114.resx">
       <DependentUpon>202101141614338_Rollup_0114.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202101271957546_FullWorksurfaceEmailEditorMigration.resx">
+      <DependentUpon>202101271957546_FullWorksurfaceEmailEditorMigration.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\Version 12.0\Version 1.12.0\202012011753406_Rollup_1201.resx">
       <DependentUpon>202012011753406_Rollup_1201.cs</DependentUpon>
