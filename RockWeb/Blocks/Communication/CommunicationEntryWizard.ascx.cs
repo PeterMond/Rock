@@ -2999,6 +2999,7 @@ function onTaskCompleted( resultData )
                 litEmailConfirmationBcc.Text = communication.BCCEmails;
             }
 
+            ifConfirmationEmailPreview.Attributes.Add("onload", "resizeIframe(this)");
             ifConfirmationEmailPreview.Attributes["srcdoc"] = communicationHtml;
         }
 

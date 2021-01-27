@@ -1328,17 +1328,19 @@
                                                         <Rock:RockLiteral runat="server" ID="litEmailConfirmationBcc" Label="BCC" />
                                                     </div>
                                                 </div>
-                                                <div class="bg-primary flex-fill position-relative mb-3 mb-sm-0" style="min-height:300px;">
-                                                    <iframe
-                                                        runat="server"
-                                                        id="ifConfirmationEmailPreview"
-                                                        name="confirmationemailpreview-iframe"
-                                                        src="javascript: window.frameElement.getAttribute('srcdoc');"
-                                                        frameborder="0"
-                                                        border="0"
-                                                        cellspacing="0"
-                                                        scrolling="yes"
-                                                        class="position-absolute w-100 h-100 inset-0" />
+                                                <div class="bg-gray-100 flex-fill position-relative mb-3 mb-sm-0 styled-scroll" style="min-height:300px;">
+                                                    <div class="position-absolute w-100 h-100 inset-0 overflow-auto">
+                                                        <iframe
+                                                            runat="server"
+                                                            id="ifConfirmationEmailPreview"
+                                                            name="confirmationemailpreview-iframe"
+                                                            src="javascript: window.frameElement.getAttribute('srcdoc');"
+                                                            frameborder="0"
+                                                            border="0"
+                                                            cellspacing="0"
+                                                            scrolling="yes"
+                                                            class="w-100" />
+                                                    </div>
                                                 </div>
 
                                             </asp:Panel>
@@ -1644,6 +1646,10 @@
                 });
             }
             );
+
+            function resizeIframe(el) {
+                el.style.height = el.contentWindow.document.documentElement.scrollHeight + 'px';
+            }
 
             function removeAttachment(source, hf, fileId) {
                 // Get the attachment list
