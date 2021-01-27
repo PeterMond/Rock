@@ -125,29 +125,75 @@ namespace Rock.Blocks.Types.Mobile.Core
 
         private ICollection<NoteTypeCache> GetViewableNoteTypes()
         {
-            return NoteTypeCache.All()
+            var contextEntityType = EntityTypeCache.Get( ContextEntityType );
+
+            if ( contextEntityType == null )
+            {
+                return new NoteTypeCache[0];
+            }
+
+            return NoteTypeCache.GetByEntity( contextEntityType.Id, string.Empty, string.Empty, true )
                 .Where( a => !NoteTypes.Any() || NoteTypes.Contains( a.Guid ) )
                 .Where( a => a.IsAuthorized( Authorization.VIEW, RequestContext.CurrentPerson ) )
                 .ToList();
         }
 
-        #region Action Methods
+        private ICollection<NoteTypeCache> GetEditableNoteTypes()
+        {
+            var contextEntityType = EntityTypeCache.Get( ContextEntityType );
 
-        [BlockAction]
-        public BlockActionResult GetNotes( Guid? parentNoteGuid, int startIndex, int count )
+            if ( contextEntityType == null )
+            {
+                return new NoteTypeCache[0];
+            }
+
+            return NoteTypeCache.GetByEntity( contextEntityType.Id, string.Empty, string.Empty, true )
+                .Where( a => !NoteTypes.Any() || NoteTypes.Contains( a.Guid ) )
+                .Where( a => a.UserSelectable )
+                .Where( a => a.IsAuthorized( Authorization.EDIT, RequestContext.CurrentPerson ) )
+                .ToList();
+        }
+
+        private object GetNoteObject( Note note )
+        {
+            var baseUrl = GlobalAttributesCache.Value( "PublicApplicationRoot" );
+            var canEdit = note.IsAuthorized( Authorization.EDIT, RequestContext.CurrentPerson );
+
+            return new
+            {
+                note.Guid,
+                NoteTypeGuid = note.NoteType.Guid,
+                note.Text,
+                PhotoUrl = note.CreatedByPersonAlias?.Person?.PhotoId != null ? $"{baseUrl}{note.CreatedByPersonAlias.Person.PhotoUrl}" : null,
+                Name = note.CreatedByPersonName,
+                Date = note.CreatedDateTime.HasValue ? ( DateTimeOffset? ) new DateTimeOffset( note.CreatedDateTime.Value ) : null,
+                ReplyCount = note.ChildNotes.Count( b => b.IsAuthorized( Authorization.VIEW, RequestContext.CurrentPerson ) ),
+                CanEdit = canEdit,
+                CanDelete = canEdit
+            };
+        }
+
+        private List<object> GetEntityNotes( Guid? parentNoteGuid, int startIndex, int count )
         {
             using ( var rockContext = new RockContext() )
             {
                 var noteService = new NoteService( rockContext );
                 var viewableNoteTypeIds = GetViewableNoteTypes().Select( t => t.Id ).ToList();
-                var baseUrl = GlobalAttributesCache.Value( "PublicApplicationRoot" );
+
+                var entityType = EntityTypeCache.Get( ContextEntityType );
+                var entity = entityType != null ? RequestContext.GetContextEntity( entityType.GetEntityType() ) : null;
+                if ( entity == null )
+                {
+                    // Indicate to caller "not found" error.
+                    return null;
+                }
 
                 var notesQuery = noteService.Queryable()
                     .AsNoTracking()
                     .Include( a => a.CreatedByPersonAlias.Person )
                     .Include( a => a.ChildNotes )
-                    .Where( a => viewableNoteTypeIds.Contains( a.NoteTypeId ) );
-
+                    .Where( a => viewableNoteTypeIds.Contains( a.NoteTypeId ) )
+                    .Where( a => a.EntityId == entity.Id );
 
                 if ( parentNoteGuid.HasValue )
                 {
@@ -155,15 +201,7 @@ namespace Rock.Blocks.Types.Mobile.Core
                 }
                 else
                 {
-                    var entityType = EntityTypeCache.Get( ContextEntityType );
-                    var entity = entityType != null ? RequestContext.GetContextEntity( entityType.GetEntityType() ) : null;
-
-                    if ( entity == null )
-                    {
-                        return ActionNotFound();
-                    }
-
-                    notesQuery = notesQuery.Where( a => a.EntityId == entity.Id && !a.ParentNoteId.HasValue );
+                    notesQuery = notesQuery.Where( a => !a.ParentNoteId.HasValue );
                 }
 
                 var viewableNotes = notesQuery
@@ -176,18 +214,191 @@ namespace Rock.Blocks.Types.Mobile.Core
                     .ToList();
 
                 var noteData = viewableNotes
-                    .Select( a => new
-                    {
-                        a.Guid,
-                        a.Text,
-                        PhotoUrl = a.CreatedByPersonAlias?.Person?.PhotoId != null ? $"{baseUrl}{a.CreatedByPersonAlias.Person.PhotoUrl}" : null,
-                        Name = a.CreatedByPersonName,
-                        Date = a.CreatedDateTime.HasValue ? ( DateTimeOffset? ) new DateTimeOffset( a.CreatedDateTime.Value ) : null,
-                        ReplyCount = a.ChildNotes.Count( b => b.IsAuthorized( Authorization.VIEW, RequestContext.CurrentPerson ) )
-                    } )
+                    .Select( a => GetNoteObject( a ) )
                     .ToList();
 
-                return ActionOk( noteData );
+                return noteData;
+            }
+        }
+
+        #region Action Methods
+
+        [BlockAction]
+        public BlockActionResult GetInitialData( int count )
+        {
+            var notes = GetEntityNotes( null, 0, count );
+
+            if ( notes == null )
+            {
+                return ActionNotFound();
+            }
+
+            var editableNoteTypes = GetEditableNoteTypes()
+                .Select( a => new
+                {
+                    a.Guid,
+                    a.Name,
+                    a.UserSelectable
+                } );
+
+            return ActionOk( new
+            {
+                EditableNoteTypes = editableNoteTypes,
+                Notes = notes
+            } );
+        }
+
+        [BlockAction]
+        public BlockActionResult GetNotes( Guid? parentNoteGuid, int startIndex, int count )
+        {
+            var notes = GetEntityNotes( parentNoteGuid, startIndex, count );
+
+            if ( notes == null )
+            {
+                return ActionNotFound();
+            }
+
+            return ActionOk( notes );
+        }
+
+        [BlockAction]
+        public BlockActionResult SaveNote( Guid? noteGuid, Guid? parentNoteGuid, Guid noteTypeGuid, string text, bool isAlert, bool isPrivate )
+        {
+            var noteType = NoteTypeCache.Get( noteTypeGuid );
+
+            if ( noteType == null )
+            {
+                return ActionBadRequest( "Invalid note type." );
+            }
+
+            var entityType = EntityTypeCache.Get( ContextEntityType );
+            var entity = entityType != null ? RequestContext.GetContextEntity( entityType.GetEntityType() ) : null;
+            if ( entity == null )
+            {
+                return ActionBadRequest( "Unknown note type." );
+            }
+
+            using ( var rockContext = new RockContext() )
+            {
+                var noteService = new NoteService( rockContext );
+                Note note;
+
+                var parentNote = parentNoteGuid.HasValue ? noteService.Get( parentNoteGuid.Value ) : null;
+
+                if ( !noteGuid.HasValue )
+                {
+                    if ( !noteType.IsAuthorized( Authorization.EDIT, RequestContext.CurrentPerson ) )
+                    {
+                        return ActionForbidden( "Not authorized to add note." );
+                    }
+
+                    note = rockContext.Notes.Create();
+                    note.IsSystem = false;
+                    note.EntityId = entity.Id;
+                    note.ParentNoteId = parentNote?.Id;
+
+                    noteService.Add( note );
+                }
+                else
+                {
+                    note = noteService.Get( noteGuid.Value );
+
+                    if ( note == null )
+                    {
+                        return ActionNotFound();
+                    }
+
+                    if ( !note.IsAuthorized( Authorization.EDIT, RequestContext.CurrentPerson ) )
+                    {
+                        return ActionForbidden( "Not authorized to edit note." );
+                    }
+                }
+
+                // If the note is new or is owned by the current person then
+                // update the private flag.
+                if ( note.Id == 0 || ( note.CreatedByPersonId.HasValue && RequestContext.CurrentPerson?.Id == note.CreatedByPersonId ) )
+                {
+                    note.IsPrivateNote = isPrivate;
+                }
+
+                // It's up to the client to handle logic for non-user selectable
+                // note types.
+                note.NoteTypeId = noteType.Id;
+
+                string personalNoteCaption = "You - Personal Note";
+                if ( string.IsNullOrWhiteSpace( note.Caption ) )
+                {
+                    note.Caption = note.IsPrivateNote ? personalNoteCaption : string.Empty;
+                }
+                else
+                {
+                    // if the note still has the personalNoteCaption, but was changed to have IsPrivateNote to false, change the caption to empty string
+                    if ( note.Caption == personalNoteCaption && !note.IsPrivateNote )
+                    {
+                        note.Caption = string.Empty;
+                    }
+                }
+
+                note.Text = text;
+                note.IsAlert = isAlert;
+
+                note.EditedByPersonAliasId = RequestContext.CurrentPerson?.PrimaryAliasId;
+                note.EditedDateTime = RockDateTime.Now;
+
+                if ( noteType.RequiresApprovals )
+                {
+                    if ( note.IsAuthorized( Authorization.APPROVE, RequestContext.CurrentPerson ) )
+                    {
+                        note.ApprovalStatus = NoteApprovalStatus.Approved;
+                        note.ApprovedByPersonAliasId = RequestContext.CurrentPerson?.PrimaryAliasId;
+                        note.ApprovedDateTime = RockDateTime.Now;
+                    }
+                    else
+                    {
+                        note.ApprovalStatus = NoteApprovalStatus.PendingApproval;
+                    }
+                }
+                else
+                {
+                    note.ApprovalStatus = NoteApprovalStatus.Approved;
+                }
+
+                rockContext.SaveChanges();
+
+                return ActionOk( GetNoteObject( note ) );
+            }
+        }
+
+        [BlockAction]
+        public BlockActionResult DeleteNote( Guid noteGuid )
+        {
+            using ( var rockContext = new RockContext() )
+            {
+                var service = new NoteService( rockContext );
+                var note = service.Get( noteGuid );
+
+                if ( note == null )
+                {
+                    return ActionNotFound();
+                }
+
+                if ( !note.IsAuthorized( Authorization.EDIT, RequestContext.CurrentPerson ) )
+                {
+                    // Rock.Constants strings include HTML so don't use.
+                    return ActionForbidden( "You are not authorized to delete this note." );
+                }
+
+                if ( service.CanDeleteChildNotes( note, RequestContext.CurrentPerson, out var errorMessage ) && service.CanDelete( note, out errorMessage ) )
+                {
+                    service.Delete( note, true );
+                    rockContext.SaveChanges();
+
+                    return ActionOk();
+                }
+                else
+                {
+                    return ActionForbidden( errorMessage );
+                }
             }
         }
 

@@ -322,13 +322,12 @@ namespace Rock.Net
         /// <summary>
         /// Gets the entity object given it's type.
         /// </summary>
-        /// <typeparam name="T">The IEntity type to retrieve.</typeparam>
         /// <returns>A reference to the IEntity object or null if none was found.</returns>
         public virtual IEntity GetContextEntity( Type entityType )
         {
             if ( ContextEntities.ContainsKey( entityType ) )
             {
-                return ( IEntity ) ContextEntities[entityType].Value;
+                return ContextEntities[entityType].Value;
             }
 
             return default;
