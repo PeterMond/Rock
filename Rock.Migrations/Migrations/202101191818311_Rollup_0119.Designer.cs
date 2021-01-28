@@ -7,13 +7,13 @@ namespace Rock.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.3-40302")]
-    public sealed partial class FullWorksurfaceEmailEditorMigration : IMigrationMetadata
+    public sealed partial class Rollup_0119 : IMigrationMetadata
     {
         private readonly ResourceManager Resources = new ResourceManager(typeof(ConnectionOpportunityTranserProperties));
         
         string IMigrationMetadata.Id
         {
-            get { return "202101271957546_FullWorksurfaceEmailEditorMigration"; }
+            get { return "202101191818311_Rollup_0119"; }
         }
         
         string IMigrationMetadata.Source
