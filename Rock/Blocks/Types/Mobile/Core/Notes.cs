@@ -21,7 +21,6 @@ using System.Data.Entity;
 using System.Linq;
 
 using Rock.Attribute;
-using Rock.Common.Mobile.Blocks.Content;
 using Rock.Data;
 using Rock.Model;
 using Rock.Security;
@@ -55,6 +54,14 @@ namespace Rock.Blocks.Types.Mobile.Core
         Order = 1,
         Key = AttributeKey.NoteTypes )]
 
+    [FileField( Rock.SystemGuid.BinaryFiletype.DEFAULT,
+        "Default Note Image",
+        Description = "This image is displayed next to the note if the author has no profile image.",
+        IsRequired = false,
+        Key = AttributeKey.DefaultNoteImage,
+        Order = 2,
+        FieldTypeClass = "Rock.Field.Types.ImageFieldType" )]
+
     #endregion
 
     [ContextAware]
@@ -74,6 +81,11 @@ namespace Rock.Blocks.Types.Mobile.Core
             /// The note types key
             /// </summary>
             public const string NoteTypes = "NoteTypes";
+
+            /// <summary>
+            /// This image is displayed next to the note if the author has no profile image.
+            /// </summary>
+            public const string DefaultNoteImage = "DefaultNoteImage";
         }
 
         /// <summary>
@@ -91,6 +103,14 @@ namespace Rock.Blocks.Types.Mobile.Core
         /// The note type unique identifiers selected in the block configuration.
         /// </value>
         protected ICollection<Guid> NoteTypes => GetAttributeValue( AttributeKey.NoteTypes ).SplitDelimitedValues().AsGuidList();
+
+        /// <summary>
+        /// Gets the default note image to display next to the note if the author has no profile image.
+        /// </summary>
+        /// <value>
+        /// The default note image to display next to the note if the author has no profile image.
+        /// </value>
+        protected Guid? DefaultNoteImage => GetAttributeValue( AttributeKey.DefaultNoteImage ).AsGuidOrNull();
 
         #region IRockMobileBlockType Implementation
 
@@ -118,11 +138,47 @@ namespace Rock.Blocks.Types.Mobile.Core
         /// </returns>
         public override object GetMobileConfigurationValues()
         {
-            return new { };
+            string defaultNoteImageUrl = null;
+
+            if ( DefaultNoteImage.HasValue )
+            {
+                // Can't use defaultNoteImageFile.Url because it will build the path
+                // relative to the current request, which won't always work with mobile
+                // applications. So force it to use the PublicApplicationRoot.
+                using ( var rockContext = new RockContext() )
+                {
+                    var defaultNoteImageFile = new BinaryFileService( rockContext ).Get( DefaultNoteImage.Value );
+
+                    if ( defaultNoteImageFile != null )
+                    {
+                        var url = defaultNoteImageFile.Path;
+                        url = url.StartsWith( "~" ) ? System.Web.VirtualPathUtility.ToAbsolute( url ) : url;
+                        if ( !url.StartsWith( "http", StringComparison.OrdinalIgnoreCase ) )
+                        {
+                            var uri = new Uri( GlobalAttributesCache.Get().GetValue( "PublicApplicationRoot" ) );
+                            if ( uri != null )
+                            {
+                                url = uri.Scheme + "://" + uri.GetComponents( UriComponents.HostAndPort, UriFormat.UriEscaped ) + url;
+                            }
+
+                            defaultNoteImageUrl = url;
+                        }
+                    }
+                }
+            }
+
+            return new
+            {
+                DefaultNoteImageUrl = defaultNoteImageUrl
+            };
         }
 
         #endregion
 
+        /// <summary>
+        /// Gets the viewable note types.
+        /// </summary>
+        /// <returns></returns>
         private ICollection<NoteTypeCache> GetViewableNoteTypes()
         {
             var contextEntityType = EntityTypeCache.Get( ContextEntityType );
@@ -138,6 +194,10 @@ namespace Rock.Blocks.Types.Mobile.Core
                 .ToList();
         }
 
+        /// <summary>
+        /// Gets the editable note types.
+        /// </summary>
+        /// <returns></returns>
         private ICollection<NoteTypeCache> GetEditableNoteTypes()
         {
             var contextEntityType = EntityTypeCache.Get( ContextEntityType );
@@ -154,6 +214,11 @@ namespace Rock.Blocks.Types.Mobile.Core
                 .ToList();
         }
 
+        /// <summary>
+        /// Gets the note object that will be sent to the shell.
+        /// </summary>
+        /// <param name="note">The database note.</param>
+        /// <returns>The note object that the shell understands.</returns>
         private object GetNoteObject( Note note )
         {
             var baseUrl = GlobalAttributesCache.Value( "PublicApplicationRoot" );
@@ -168,11 +233,20 @@ namespace Rock.Blocks.Types.Mobile.Core
                 Name = note.CreatedByPersonName,
                 Date = note.CreatedDateTime.HasValue ? ( DateTimeOffset? ) new DateTimeOffset( note.CreatedDateTime.Value ) : null,
                 ReplyCount = note.ChildNotes.Count( b => b.IsAuthorized( Authorization.VIEW, RequestContext.CurrentPerson ) ),
+                note.IsAlert,
+                IsPrivate = note.IsPrivateNote,
                 CanEdit = canEdit,
                 CanDelete = canEdit
             };
         }
 
+        /// <summary>
+        /// Gets the notes for the entity.
+        /// </summary>
+        /// <param name="parentNoteGuid">The parent note unique identifier.</param>
+        /// <param name="startIndex">The start index.</param>
+        /// <param name="count">The count.</param>
+        /// <returns>The list of notes found.</returns>
         private List<object> GetEntityNotes( Guid? parentNoteGuid, int startIndex, int count )
         {
             using ( var rockContext = new RockContext() )
@@ -223,6 +297,11 @@ namespace Rock.Blocks.Types.Mobile.Core
 
         #region Action Methods
 
+        /// <summary>
+        /// Gets the initial data that will tell the note block how to function.
+        /// </summary>
+        /// <param name="count">The number of initial notes to load.</param>
+        /// <returns>A response that contains the initial shell block data.</returns>
         [BlockAction]
         public BlockActionResult GetInitialData( int count )
         {
@@ -248,6 +327,13 @@ namespace Rock.Blocks.Types.Mobile.Core
             } );
         }
 
+        /// <summary>
+        /// Gets a subset of the notes to be displayed.
+        /// </summary>
+        /// <param name="parentNoteGuid">The parent note unique identifier.</param>
+        /// <param name="startIndex">The start index.</param>
+        /// <param name="count">The number of notes to return.</param>
+        /// <returns>A response that contains the requested notes or an error.</returns>
         [BlockAction]
         public BlockActionResult GetNotes( Guid? parentNoteGuid, int startIndex, int count )
         {
@@ -261,6 +347,16 @@ namespace Rock.Blocks.Types.Mobile.Core
             return ActionOk( notes );
         }
 
+        /// <summary>
+        /// Saves the note.
+        /// </summary>
+        /// <param name="noteGuid">The note unique identifier.</param>
+        /// <param name="parentNoteGuid">The parent note unique identifier.</param>
+        /// <param name="noteTypeGuid">The note type unique identifier.</param>
+        /// <param name="text">The text of the note.</param>
+        /// <param name="isAlert">if set to <c>true</c> the note is an alert.</param>
+        /// <param name="isPrivate">if set to <c>true</c> the note is private.</param>
+        /// <returns>A response that contains the saved note data or an error.</returns>
         [BlockAction]
         public BlockActionResult SaveNote( Guid? noteGuid, Guid? parentNoteGuid, Guid noteTypeGuid, string text, bool isAlert, bool isPrivate )
         {
@@ -369,6 +465,11 @@ namespace Rock.Blocks.Types.Mobile.Core
             }
         }
 
+        /// <summary>
+        /// Deletes the note.
+        /// </summary>
+        /// <param name="noteGuid">The note unique identifier.</param>
+        /// <returns>A response that contains either an error or informs the client the note was deleted.</returns>
         [BlockAction]
         public BlockActionResult DeleteNote( Guid noteGuid )
         {
