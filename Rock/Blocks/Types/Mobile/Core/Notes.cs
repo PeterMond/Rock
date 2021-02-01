@@ -223,6 +223,19 @@ namespace Rock.Blocks.Types.Mobile.Core
         {
             var baseUrl = GlobalAttributesCache.Value( "PublicApplicationRoot" );
             var canEdit = note.IsAuthorized( Authorization.EDIT, RequestContext.CurrentPerson );
+            var canReply = note.NoteType.AllowsReplies;
+
+            // If the note type specifies the max reply depth then calculate and check.
+            if ( canReply && note.NoteType.MaxReplyDepth.HasValue )
+            {
+                int replyDepth = 0;
+                for ( var noteParent = note; noteParent != null; noteParent = noteParent.ParentNote )
+                {
+                    replyDepth += 1;
+                }
+
+                canReply = replyDepth < note.NoteType.MaxReplyDepth.Value;
+            }
 
             return new
             {
@@ -236,7 +249,8 @@ namespace Rock.Blocks.Types.Mobile.Core
                 note.IsAlert,
                 IsPrivate = note.IsPrivateNote,
                 CanEdit = canEdit,
-                CanDelete = canEdit
+                CanDelete = canEdit,
+                CanReply = canReply
             };
         }
 
@@ -265,6 +279,7 @@ namespace Rock.Blocks.Types.Mobile.Core
                 var notesQuery = noteService.Queryable()
                     .AsNoTracking()
                     .Include( a => a.CreatedByPersonAlias.Person )
+                    .Include( a => a.ParentNote )
                     .Include( a => a.ChildNotes )
                     .Where( a => viewableNoteTypeIds.Contains( a.NoteTypeId ) )
                     .Where( a => a.EntityId == entity.Id );
